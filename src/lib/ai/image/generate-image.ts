@@ -206,7 +206,7 @@ export const generateImageWithHuggingFace = async (
   options: GenerateImageOptions,
 ): Promise<GeneratedImageResult> => {
   // HuggingFace Inference API - FREE tier available
-  // Uses Stable Diffusion models
+  // Uses fast-sdxl model via HuggingFace Router
   const apiKey = process.env.HUGGINGFACE_API_KEY;
   
   if (!apiKey) {
@@ -216,8 +216,9 @@ export const generateImageWithHuggingFace = async (
   }
   
   try {
+    // Try HuggingFace Router with fast-sdxl model (very fast, good quality)
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell",
+      "https://router.huggingface.co/fal-ai/fal-ai/fast-sdxl",
       {
         method: "POST",
         headers: {
@@ -225,7 +226,8 @@ export const generateImageWithHuggingFace = async (
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          inputs: options.prompt,
+          sync_mode: true,
+          prompt: options.prompt,
         }),
         signal: options.abortSignal,
       }
@@ -233,10 +235,11 @@ export const generateImageWithHuggingFace = async (
     
     if (!response.ok) {
       // If HuggingFace fails, fallback to Pollinations
-      logger.warn(`HuggingFace API error: ${response.statusText}, falling back to Pollinations`);
+      logger.warn(`HuggingFace API error: ${response.status} ${response.statusText}, falling back to Pollinations`);
       return generateImageWithPollinations(options);
     }
     
+    // Response is a blob (image)
     const arrayBuffer = await response.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
     
