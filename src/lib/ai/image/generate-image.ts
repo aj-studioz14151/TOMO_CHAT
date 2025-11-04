@@ -169,6 +169,87 @@ export async function generateImageWithOpenRouter(
   return { images };
 }
 
+export const generateImageWithPollinations = async (
+  options: GenerateImageOptions,
+): Promise<GeneratedImageResult> => {
+  // Pollinations.ai - Completely FREE, no API key needed!
+  // https://pollinations.ai/
+  
+  const prompt = encodeURIComponent(options.prompt);
+  const imageUrl = `https://image.pollinations.ai/prompt/${prompt}?width=1024&height=1024&nologo=true&enhance=true`;
+  
+  try {
+    const response = await fetch(imageUrl, {
+      signal: options.abortSignal,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Pollinations API error: ${response.statusText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
+    
+    return {
+      images: [{
+        base64,
+        mimeType: "image/jpeg",
+      }],
+    };
+  } catch (error) {
+    logger.error("Pollinations image generation error:", error);
+    throw error;
+  }
+};
+
+export const generateImageWithHuggingFace = async (
+  options: GenerateImageOptions,
+): Promise<GeneratedImageResult> => {
+  // HuggingFace Inference API - FREE tier available
+  // Uses Stable Diffusion models
+  const apiKey = process.env.HUGGINGFACE_API_KEY;
+  
+  if (!apiKey) {
+    // Fallback to Pollinations if no API key
+    logger.info("No HuggingFace API key, using Pollinations instead");
+    return generateImageWithPollinations(options);
+  }
+  
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: options.prompt,
+        }),
+        signal: options.abortSignal,
+      }
+    );
+    
+    if (!response.ok) {
+      throw new Error(`HuggingFace API error: ${response.statusText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString("base64");
+    
+    return {
+      images: [{
+        base64,
+        mimeType: "image/jpeg",
+      }],
+    };
+  } catch (error) {
+    logger.error("HuggingFace image generation error:", error);
+    throw error;
+  }
+};
+
 export const generateImageWithNanoBanana = async (
   options: GenerateImageOptions,
 ): Promise<GeneratedImageResult> => {

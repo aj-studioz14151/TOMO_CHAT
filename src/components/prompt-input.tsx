@@ -222,7 +222,7 @@ export default function PromptInput({
   );
 
   const handleGenerateImage = useCallback(
-    (provider?: "google" | "openai" | "openrouter") => {
+    (provider?: "google" | "openai" | "openrouter" | "pollinations" | "huggingface") => {
       if (!provider) {
         appStoreMutate({
           threadImageToolModel: {},
@@ -532,6 +532,21 @@ export default function PromptInput({
                       </DropdownMenuSubTrigger>
                       <DropdownMenuPortal>
                         <DropdownMenuSubContent>
+                          <DropdownMenuItem
+                            onClick={() => handleGenerateImage("pollinations")}
+                            className="cursor-pointer"
+                          >
+                            <ImagesIcon className="mr-2 size-4 text-green-500" />
+                            Pollinations.ai (FREE 🆓)
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleGenerateImage("huggingface")}
+                            className="cursor-pointer"
+                          >
+                            <ImagesIcon className="mr-2 size-4 text-yellow-500" />
+                            HuggingFace (FREE tier 🆓)
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem
                             disabled={modelInfo?.isToolCallUnsupported}
                             onClick={() => handleGenerateImage("google")}

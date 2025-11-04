@@ -47,7 +47,7 @@ import {
 import { getSession } from "auth/server";
 import { colorize } from "consola/utils";
 import { generateUUID } from "lib/utils";
-import { nanoBananaTool, openaiImageTool } from "lib/ai/tools/image";
+import { nanoBananaTool, openaiImageTool, openRouterImageTool, pollinationsImageTool, huggingFaceImageTool } from "lib/ai/tools/image";
 import { ImageToolName } from "lib/ai/tools";
 import { buildCsvIngestionPreviewParts } from "@/lib/ai/ingest/csv-ingest";
 import { serverFileStorage } from "lib/file-storage";
@@ -280,7 +280,15 @@ export async function POST(request: Request) {
               [ImageToolName]:
                 imageTool?.model === "google"
                   ? nanoBananaTool
-                  : openaiImageTool,
+                  : imageTool?.model === "openai"
+                  ? openaiImageTool
+                  : imageTool?.model === "openrouter"
+                  ? openRouterImageTool
+                  : imageTool?.model === "pollinations"
+                  ? pollinationsImageTool
+                  : imageTool?.model === "huggingface"
+                  ? huggingFaceImageTool
+                  : pollinationsImageTool, // Default to free Pollinations
             }
           : {};
         const vercelAITooles = safe({

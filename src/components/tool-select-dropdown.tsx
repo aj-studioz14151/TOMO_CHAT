@@ -89,7 +89,7 @@ interface ToolSelectDropdownProps {
   mentions?: ChatMention[];
   onSelectWorkflow?: (workflow: WorkflowSummary) => void;
   onSelectAgent?: (agent: AgentSummary) => void;
-  onGenerateImage?: (provider?: "google" | "openai" | "openrouter") => void;
+  onGenerateImage?: (provider?: "google" | "openai" | "openrouter" | "pollinations" | "huggingface") => void;
   className?: string;
 }
 
@@ -1051,7 +1051,7 @@ function ImageGeneratorSelector({
   onGenerateImage,
   modelInfo,
 }: {
-  onGenerateImage?: (provider?: "google" | "openai" | "openrouter") => void;
+  onGenerateImage?: (provider?: "google" | "openai" | "openrouter" | "pollinations" | "huggingface") => void;
   modelInfo?: { isToolCallUnsupported?: boolean };
 }) {
   const t = useTranslations("Chat");
@@ -1065,6 +1065,21 @@ function ImageGeneratorSelector({
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
+            <DropdownMenuItem
+              onClick={() => onGenerateImage?.("pollinations")}
+              className="cursor-pointer"
+            >
+              <ImagesIcon className="mr-2 size-4 text-green-500" />
+              Pollinations.ai (FREE 🆓)
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onGenerateImage?.("huggingface")}
+              className="cursor-pointer"
+            >
+              <ImagesIcon className="mr-2 size-4 text-yellow-500" />
+              HuggingFace (FREE tier 🆓)
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               disabled={modelInfo?.isToolCallUnsupported}
               onClick={() => onGenerateImage?.("google")}
