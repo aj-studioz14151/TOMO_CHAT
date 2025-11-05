@@ -206,7 +206,7 @@ export const generateImageWithHuggingFace = async (
   options: GenerateImageOptions,
 ): Promise<GeneratedImageResult> => {
   // HuggingFace Inference API - FREE tier available
-  // Uses fast-sdxl model via HuggingFace Router
+  // Uses Qwen-Image model via HuggingFace Router (better quality and accuracy)
   const apiKey = process.env.HUGGINGFACE_API_KEY;
   
   if (!apiKey) {
@@ -216,9 +216,9 @@ export const generateImageWithHuggingFace = async (
   }
   
   try {
-    // Try HuggingFace Router with fast-sdxl model (very fast, good quality)
+    // Try HuggingFace with Qwen-Image model (better quality, more accurate)
     const response = await fetch(
-      "https://router.huggingface.co/fal-ai/fal-ai/fast-sdxl",
+      "https://api-inference.huggingface.co/models/Qwen/Qwen2-VL-7B-Instruct",
       {
         method: "POST",
         headers: {
@@ -226,8 +226,10 @@ export const generateImageWithHuggingFace = async (
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          sync_mode: true,
-          prompt: options.prompt,
+          inputs: options.prompt,
+          parameters: {
+            num_inference_steps: 5,
+          },
         }),
         signal: options.abortSignal,
       }
