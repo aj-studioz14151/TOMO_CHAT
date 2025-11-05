@@ -98,7 +98,7 @@ Sample prompt:
 
 <br/>
 
-### 🔗 Visual Workflows as Custom Tools
+### 🔗 Visual Workflows as Custom Tools...
 
 <img width="1912" height="953" alt="workflow" loading="lazy" src="https://github.com/user-attachments/assets/e69e72e8-595c-480e-b519-4531f4c6331f" />
 
