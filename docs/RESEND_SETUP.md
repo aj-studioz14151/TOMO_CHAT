@@ -56,7 +56,7 @@ EMAIL_FROM=support@ajstudioz.co.in
 
 2. Run the test:
    ```bash
-   pnpm test:email your-email@example.com
+   pnpm test:email kamesh14151@gmail.com
    ```
 
 3. Check your inbox for test emails!

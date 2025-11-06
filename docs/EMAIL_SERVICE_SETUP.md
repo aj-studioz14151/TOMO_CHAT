@@ -60,7 +60,7 @@ EMAIL_FROM=your-email@gmail.com
    ```bash
    EMAIL_PROVIDER=resend
    RESEND_API_KEY=re_your_api_key_here
-   EMAIL_FROM=noreply@yourdomain.com
+   EMAIL_FROM=noreply@ajstudioz.co.in
    ```
 
 **🎉 That's it!** If your domain is already verified with Resend (from another project), it will work immediately!
@@ -99,7 +99,7 @@ See detailed guide: [Resend Setup with ajstudioz.co.in](./RESEND_SETUP.md)
    SMTP_SECURE=false
    SMTP_USER=apikey
    SMTP_PASS=your-sendgrid-api-key
-   EMAIL_FROM=noreply@yourdomain.com
+   EMAIL_FROM=noreply@ajstudioz.co.in
    ```
 
 #### Option D: AWS SES (Best for Scale)
@@ -114,7 +114,7 @@ See detailed guide: [Resend Setup with ajstudioz.co.in](./RESEND_SETUP.md)
    SMTP_SECURE=false
    SMTP_USER=your-smtp-username
    SMTP_PASS=your-smtp-password
-   EMAIL_FROM=noreply@yourdomain.com
+   EMAIL_FROM=noreply@ajstudioz.co.in
    ```
 
 #### Option E: Ethereal Email (Testing Only)

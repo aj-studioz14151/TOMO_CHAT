@@ -45,11 +45,11 @@ async function runTests() {
 
   // Get test email from command line or use default
   const testEmail =
-    process.argv[2] || process.env.SMTP_USER || "test@example.com";
+    process.argv[2] || process.env.SMTP_USER || "kamesh14151@gmail.com";
 
   if (!testEmail) {
     logger.error("❌ Please provide a test email address:");
-    logger.error("   pnpm tsx scripts/test-email.ts your-email@example.com");
+    logger.error("   pnpm tsx scripts/test-email.ts kamesh14151@gmail.com");
     process.exit(1);
   }
 

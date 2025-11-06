@@ -12,7 +12,7 @@ import logger from "@/lib/logger";
  * Test Email API Endpoint
  *
  * Usage:
- * GET /api/test-email?to=your-email@example.com&type=verification
+ * GET /api/test-email?to=kamesh14151@gmail.com&type=verification
  *
  * Query Parameters:
  * - to: Email address to send test email to (required)
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
         {
           success: false,
           error:
-            "Missing 'to' parameter. Usage: /api/test-email?to=your-email@example.com",
+            "Missing 'to' parameter. Usage: /api/test-email?to=kamesh14151@gmail.com",
         },
         { status: 400 },
       );
@@ -121,7 +121,7 @@ export async function GET(request: NextRequest) {
           recipient: toEmail,
           emailType,
           provider: process.env.EMAIL_PROVIDER || "smtp",
-          from: process.env.EMAIL_FROM || "noreply@example.com",
+          from: process.env.EMAIL_FROM || "noreply@ajstudioz.co.in",
         },
       },
       { status: allSuccess ? 200 : 500 },
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
  *
  * Body:
  * {
- *   "to": "your-email@example.com",
+ *   "to": "kamesh14151@gmail.com",
  *   "type": "verification",
  *   "userName": "John Doe"
  * }
@@ -242,7 +242,7 @@ export async function POST(request: NextRequest) {
           userName,
           emailType: type,
           provider: process.env.EMAIL_PROVIDER || "smtp",
-          from: process.env.EMAIL_FROM || "noreply@example.com",
+          from: process.env.EMAIL_FROM || "noreply@ajstudioz.co.in",
         },
       },
       { status: allSuccess ? 200 : 500 },

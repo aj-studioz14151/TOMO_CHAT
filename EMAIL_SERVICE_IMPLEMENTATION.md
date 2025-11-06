@@ -22,7 +22,7 @@ This project now includes a complete, production-ready email service for authent
 3. **`scripts/test-email.ts`** - Email testing script
    - Tests all email templates
    - Validates SMTP connection
-   - Run with: `pnpm test:email your-email@example.com`
+   - Run with: `pnpm test:email kamesh14151@gmail.com`
 
 ### 🔧 Modified Files
 
@@ -39,7 +39,7 @@ This project now includes a complete, production-ready email service for authent
      SMTP_SECURE=false
      SMTP_USER=your-email@gmail.com
      SMTP_PASS=your-app-password
-     EMAIL_FROM=noreply@yourdomain.com
+     EMAIL_FROM=noreply@ajstudioz.co.in
      ```
 
 3. **`src/lib/auth/auth-instance.ts`**
@@ -83,7 +83,7 @@ EMAIL_FROM=your-email@gmail.com
 
 ### 3. Test the Email Service
 ```bash
-pnpm test:email your-email@example.com
+pnpm test:email kamesh14151@gmail.com
 ```
 
 ## 📧 Email Templates
