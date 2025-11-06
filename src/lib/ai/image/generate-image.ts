@@ -56,7 +56,6 @@ export async function generateImageWithOpenAI(
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "dall-e-3",
         prompt: options.prompt,
         size: "1024x1024",
         style: "vivid",
