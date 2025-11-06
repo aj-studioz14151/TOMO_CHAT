@@ -77,133 +77,121 @@ function PureImageGeneratorToolInvocation({
     }
   };
 
-  // Simple loading state like web-search
+  // Simple loading state with clean design
   if (isGenerating) {
     return (
-      <div className="flex flex-col gap-4">
-        <TextShimmer>{getModeText(mode)}</TextShimmer>
-        <div className="w-full h-96 overflow-hidden rounded-lg">
-          <LetterGlitch />
+      <div className="flex flex-col gap-3 max-w-2xl">
+        <div className="flex items-center gap-2 px-1">
+          <ImagesIcon className="size-4 text-primary animate-pulse" />
+          <TextShimmer className="text-sm font-medium">
+            {getModeText(mode)}
+          </TextShimmer>
         </div>
-        <p className="text-xs text-muted-foreground text-center">
-          Image generation may take up to 1 minute.
-        </p>
+        <div className="relative w-full aspect-video overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-primary/5 via-background to-primary/5">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="relative w-full h-full">
+              <LetterGlitch />
+            </div>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/80 to-transparent p-4">
+            <p className="text-xs text-muted-foreground text-center font-medium">
+              This may take up to 1 minute
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-2">
-        {!hasError && <ImagesIcon className="size-4" />}
+    <div className="flex flex-col gap-3 max-w-2xl">
+      <div className="flex items-center gap-2 px-1">
+        {!hasError && <ImagesIcon className="size-4 text-primary" />}
         <span className="text-sm font-semibold">
           {hasError ? "Image generation failed" : getModeHeader(mode)}
         </span>
-        <span className="text-xs text-muted-foreground">{result?.model}</span>
+        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+          {result?.model}
+        </span>
       </div>
 
-      <div className="w-full flex flex-col gap-3 pb-2">
+      <div className="w-full">
         {hasError ? (
-          <div className="bg-card text-muted-foreground p-6 rounded-lg text-xs border border-border/20">
+          <div className="bg-destructive/10 text-destructive border border-destructive/20 p-4 rounded-xl text-sm">
             {part.errorText ??
               (result?.images.length === 0
                 ? "No images generated"
                 : "Failed to generate image. Please try again.")}
           </div>
         ) : images.length > 0 ? (
-          <>
+          <div className="relative group rounded-xl overflow-hidden border border-border/50 hover:border-primary/50 transition-all duration-300 shadow-lg hover:shadow-2xl bg-card">
+            {/* Single image display */}
             <div
               className={cn(
-                "grid gap-3",
-                images.length === 1
-                  ? "grid-cols-1 max-w-lg mx-auto"
-                  : "grid-cols-1 sm:grid-cols-2 max-w-4xl",
+                "relative overflow-hidden transition-all duration-700 ease-out",
+                loadedImages.has(0)
+                  ? "opacity-100 scale-100"
+                  : "opacity-0 scale-95",
               )}
             >
-              {images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative group rounded-xl overflow-hidden border border-border/50 hover:border-primary/50 transition-all duration-300 shadow-md hover:shadow-xl backdrop-blur-sm bg-card/50"
-                  style={{ maxHeight: '400px' }}
-                >
-                  {/* Progressive reveal animation */}
-                  <div
-                    className={cn(
-                      "relative overflow-hidden transition-all duration-1000 ease-out",
-                      loadedImages.has(index)
-                        ? "opacity-100 scale-100"
-                        : "opacity-0 scale-95"
-                    )}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={image.url}
-                      loading="lazy"
-                      alt={`Generated image ${index + 1}`}
-                      className={cn(
-                        "w-full h-full object-cover transition-all duration-1000",
-                        loadedImages.has(index) ? "blur-0" : "blur-lg"
-                      )}
-                      style={{
-                        maxHeight: '400px',
-                        objectFit: 'cover',
-                        animation: loadedImages.has(index)
-                          ? "revealImage 1.2s cubic-bezier(0.4, 0, 0.2, 1)"
-                          : "none",
-                      }}
-                      onLoad={() => handleImageLoad(index)}
-                    />
-                  </div>
-                  
-                  {/* Loading skeleton */}
-                  {!loadedImages.has(index) && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-muted/50 via-muted/30 to-muted/50 animate-pulse" />
-                  )}
-
-                  {/* Hover overlay with gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
-                    <a
-                      href={image.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-primary/90 backdrop-blur-sm text-primary-foreground px-5 py-2 rounded-full text-sm font-medium hover:scale-105 hover:bg-primary transition-all shadow-lg"
-                    >
-                      View Full Size
-                    </a>
-                  </div>
-                  
-                  {/* Subtle corner accent */}
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </div>
-              ))}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={images[0].url}
+                loading="lazy"
+                alt="Generated image"
+                className={cn(
+                  "w-full h-auto object-cover transition-all duration-700",
+                  loadedImages.has(0) ? "blur-0" : "blur-lg",
+                )}
+                style={{
+                  maxHeight: "512px",
+                  animation: loadedImages.has(0)
+                    ? "revealImage 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
+                    : "none",
+                }}
+                onLoad={() => handleImageLoad(0)}
+              />
             </div>
-            
-            {/* Add keyframe animation styles */}
-            <style jsx>{`
-              @keyframes revealImage {
-                0% {
-                  opacity: 0;
-                  transform: scale(0.95);
-                  filter: blur(20px);
-                }
-                50% {
-                  opacity: 0.5;
-                  filter: blur(10px);
-                }
-                100% {
-                  opacity: 1;
-                  transform: scale(1);
-                  filter: blur(0);
-                }
-              }
-            `}</style>
-          </>
+
+            {/* Loading skeleton */}
+            {!loadedImages.has(0) && (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-muted/30 to-primary/10 animate-pulse" />
+            )}
+
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-6">
+              <a
+                href={images[0].url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-full text-sm font-medium hover:scale-105 transition-all shadow-xl"
+              >
+                View Full Size
+              </a>
+            </div>
+          </div>
         ) : (
-          <div className="bg-card text-muted-foreground p-6 rounded-lg text-xs border border-border/20">
-            No images to display. Result: {JSON.stringify(result)}
+          <div className="bg-muted/50 text-muted-foreground p-4 rounded-xl text-sm border border-border/20">
+            No images to display
           </div>
         )}
       </div>
+
+      {/* Keyframe animation */}
+      <style jsx>{`
+        @keyframes revealImage {
+          0% {
+            opacity: 0;
+            transform: scale(0.98);
+            filter: blur(12px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+          }
+        }
+      `}</style>
     </div>
   );
 }
