@@ -5,8 +5,6 @@ import equal from "lib/equal";
 import { cn } from "lib/utils";
 import { ImagesIcon, Download } from "lucide-react";
 import { memo, useMemo, useState } from "react";
-import { TextShimmer } from "ui/text-shimmer";
-import LetterGlitch from "ui/letter-glitch";
 
 interface ImageGeneratorToolInvocationProps {
   part: ToolUIPart;
@@ -89,21 +87,51 @@ function PureImageGeneratorToolInvocation({
   if (isGenerating) {
     return (
       <div className="inline-flex flex-col gap-2 max-w-sm">
-        <div className="relative w-64 h-64 overflow-hidden rounded-2xl border border-border/30 bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm">
+        <div className="relative w-64 h-64 overflow-hidden rounded-2xl border border-border/30 bg-gradient-to-br from-muted/40 via-muted/20 to-muted/40">
+          {/* Animated gradient shimmer */}
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer"
+            style={{
+              backgroundSize: "200% 100%",
+              animation: "shimmer 2s infinite",
+            }}
+          />
+
+          {/* Pulsing dots pattern */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="relative w-full h-full">
-              <LetterGlitch />
+            <div className="flex gap-2">
+              <div
+                className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
+                style={{ animationDelay: "0ms" }}
+              />
+              <div
+                className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
+                style={{ animationDelay: "150ms" }}
+              />
+              <div
+                className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
+                style={{ animationDelay: "300ms" }}
+              />
             </div>
           </div>
+
+          {/* Status text */}
           <div className="absolute bottom-3 left-3 right-3">
-            <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/50">
+            <div className="flex items-center gap-2 bg-background/90 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/40 shadow-lg">
               <ImagesIcon className="size-3.5 text-primary animate-pulse flex-shrink-0" />
-              <TextShimmer className="text-xs font-medium flex-1 truncate">
+              <span className="text-xs font-medium text-muted-foreground flex-1 truncate">
                 {getModeText(mode)}
-              </TextShimmer>
+              </span>
             </div>
           </div>
         </div>
+
+        <style jsx>{`
+          @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+          }
+        `}</style>
       </div>
     );
   }
@@ -119,28 +147,29 @@ function PureImageGeneratorToolInvocation({
               : "Failed to generate image")}
         </div>
       ) : images.length > 0 ? (
-        <div className="relative group w-64 h-64 rounded-2xl overflow-hidden border border-border/30 hover:border-border/60 transition-all duration-300 shadow-md hover:shadow-xl bg-card">
-          {/* Compact single image */}
-          <div
-            className={cn(
-              "relative w-full h-full transition-all duration-500",
-              loadedImages.has(0) ? "opacity-100" : "opacity-0",
-            )}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={images[0].url}
-              loading="lazy"
-              alt="Generated image"
-              className="w-full h-full object-cover"
-              onLoad={() => handleImageLoad(0)}
-            />
-          </div>
-
-          {/* Loading skeleton */}
+        <div className="relative group w-64 h-64 rounded-2xl overflow-hidden border border-border/30 hover:border-border/60 transition-all duration-300 shadow-md hover:shadow-xl bg-muted/20">
+          {/* Loading skeleton - shown while image loads */}
           {!loadedImages.has(0) && (
             <div className="absolute inset-0 bg-gradient-to-br from-muted/50 via-muted/30 to-muted/50 animate-pulse" />
           )}
+
+          {/* Compact single image */}
+          <div className="relative w-full h-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={images[0].url}
+              alt="Generated image"
+              className={cn(
+                "w-full h-full object-cover transition-opacity duration-500",
+                loadedImages.has(0) ? "opacity-100" : "opacity-0",
+              )}
+              onLoad={() => handleImageLoad(0)}
+              onError={(e) => {
+                console.error("Image failed to load:", images[0].url);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          </div>
 
           {/* Compact hover controls */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
