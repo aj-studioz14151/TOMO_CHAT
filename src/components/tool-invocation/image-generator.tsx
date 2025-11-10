@@ -86,8 +86,11 @@ function PureImageGeneratorToolInvocation({
   // Compact loading state - ChatGPT style
   if (isGenerating) {
     return (
-      <div className="inline-flex flex-col gap-2 max-w-sm">
-        <div className="relative w-64 h-64 overflow-hidden rounded-2xl border border-border/30 bg-gradient-to-br from-muted/40 via-muted/20 to-muted/40">
+      <div className="inline-flex flex-col gap-2 max-w-fit">
+        <div
+          className="relative overflow-hidden rounded-2xl border border-border/30 bg-gradient-to-br from-muted/40 via-muted/20 to-muted/40"
+          style={{ width: "256px", height: "256px" }}
+        >
           {/* Animated gradient shimmer */}
           <div
             className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent animate-shimmer"
@@ -138,16 +141,22 @@ function PureImageGeneratorToolInvocation({
 
   // Compact result display - ChatGPT style
   return (
-    <div className="inline-flex flex-col gap-2">
+    <div className="inline-flex flex-col gap-2 max-w-fit">
       {hasError ? (
-        <div className="w-64 bg-destructive/10 text-destructive border border-destructive/20 p-3 rounded-xl text-xs">
+        <div
+          className="bg-destructive/10 text-destructive border border-destructive/20 p-3 rounded-xl text-xs"
+          style={{ width: "256px" }}
+        >
           {part.errorText ??
             (result?.images.length === 0
               ? "No images generated"
               : "Failed to generate image")}
         </div>
       ) : images.length > 0 ? (
-        <div className="relative group w-64 h-64 rounded-2xl overflow-hidden border border-border/30 hover:border-border/60 transition-all duration-300 shadow-md hover:shadow-xl bg-muted/20">
+        <div
+          className="relative group rounded-2xl overflow-hidden border border-border/30 hover:border-border/60 transition-all duration-300 shadow-md hover:shadow-xl bg-muted/20"
+          style={{ width: "256px", height: "256px" }}
+        >
           {/* Loading skeleton - shown while image loads */}
           {!loadedImages.has(0) && (
             <div className="absolute inset-0 bg-gradient-to-br from-muted/50 via-muted/30 to-muted/50 animate-pulse" />
@@ -163,6 +172,7 @@ function PureImageGeneratorToolInvocation({
                 "w-full h-full object-cover transition-opacity duration-500",
                 loadedImages.has(0) ? "opacity-100" : "opacity-0",
               )}
+              style={{ width: "256px", height: "256px" }}
               onLoad={() => handleImageLoad(0)}
               onError={(e) => {
                 console.error("Image failed to load:", images[0].url);
@@ -200,7 +210,10 @@ function PureImageGeneratorToolInvocation({
           </div>
         </div>
       ) : (
-        <div className="w-64 bg-muted/50 text-muted-foreground p-3 rounded-xl text-xs border border-border/20">
+        <div
+          className="bg-muted/50 text-muted-foreground p-3 rounded-xl text-xs border border-border/20"
+          style={{ width: "256px" }}
+        >
           No images to display
         </div>
       )}
