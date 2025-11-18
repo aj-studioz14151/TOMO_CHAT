@@ -1,0 +1,29 @@
+# robots.txt for TOMO - AI Chat Assistant
+# https://chat.tomoacademy.site
+
+User-agent: *
+Allow: /
+Allow: /api/og/*
+
+Disallow: /api/*
+Disallow: /admin/*
+Disallow: /settings/*
+
+# Sitemap
+Sitemap: https://chat.tomoacademy.site/sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 0
+
+# Allow major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 0

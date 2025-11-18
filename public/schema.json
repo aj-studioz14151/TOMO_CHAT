@@ -1,0 +1,53 @@
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "TOMO",
+  "applicationCategory": "BusinessApplication",
+  "applicationSubCategory": "AI Chat Assistant",
+  "description": "TOMO is an advanced AI-powered chat assistant with intelligent tools, voice capabilities, image generation, and real-time search. Experience smart conversations with TOMO.",
+  "operatingSystem": "Web Browser, Windows, macOS, Linux, iOS, Android",
+  "url": "https://chat.tomoacademy.site",
+  "image": "https://chat.tomoacademy.site/aj-logo.jpg",
+  "screenshot": "https://chat.tomoacademy.site/aj-logo.jpg",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.8",
+    "ratingCount": "1250"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "TOMO Academy",
+    "url": "https://chat.tomoacademy.site"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "TOMO Academy",
+    "url": "https://chat.tomoacademy.site",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://chat.tomoacademy.site/aj-logo.jpg"
+    }
+  },
+  "softwareVersion": "1.0",
+  "datePublished": "2025-01-01",
+  "dateModified": "2025-11-18",
+  "featureList": [
+    "AI-powered conversations",
+    "Voice chat assistant",
+    "Image generation",
+    "Real-time web search",
+    "Multi-language support",
+    "Custom AI agents",
+    "Tool integrations",
+    "Workflow automation"
+  ],
+  "inLanguage": ["en", "es", "fr", "ja", "ko", "ta"],
+  "sameAs": [
+    "https://github.com/kamesh6592-cell/hello-its"
+  ]
+}

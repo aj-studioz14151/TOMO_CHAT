@@ -18,10 +18,33 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TOMO",
+  title: {
+    default: "TOMO - AI-Powered Chat Assistant | Smart Conversations",
+    template: "%s | TOMO"
+  },
   description:
-    "TOMO is an AI-powered chatbot that uses advanced tools to answer questions.",
-  metadataBase: new URL('https://hello-its.vercel.app'),
+    "TOMO is an advanced AI-powered chat assistant with intelligent tools, voice chat, image generation, and real-time search. Experience the future of AI conversations with TOMO chat.",
+  keywords: [
+    "TOMO",
+    "TOMO chat",
+    "TOMO AI",
+    "AI chatbot",
+    "AI assistant",
+    "AI chat",
+    "conversational AI",
+    "smart chatbot",
+    "AI tools",
+    "voice assistant",
+    "AI image generation",
+    "intelligent assistant",
+    "ChatGPT alternative",
+    "AI conversation",
+    "TOMO Academy"
+  ],
+  authors: [{ name: "TOMO Academy" }],
+  creator: "TOMO Academy",
+  publisher: "TOMO Academy",
+  metadataBase: new URL('https://chat.tomoacademy.site'),
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
@@ -34,10 +57,10 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   openGraph: {
-    title: 'TOMO',
-    description: 'TOMO is an AI-powered chatbot that uses advanced tools to answer questions.',
-    url: 'https://hello-its.vercel.app',
-    siteName: 'TOMO',
+    title: 'TOMO - AI-Powered Chat Assistant | Smart Conversations',
+    description: 'Experience TOMO - an advanced AI chat assistant with intelligent tools, voice capabilities, and real-time assistance. Your smart conversation partner.',
+    url: 'https://chat.tomoacademy.site',
+    siteName: 'TOMO - AI Chat Assistant',
     locale: 'en_US',
     type: 'website',
     images: [
@@ -51,9 +74,33 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TOMO',
-    description: 'TOMO is an AI-powered chatbot that uses advanced tools to answer questions.',
+    title: 'TOMO - AI-Powered Chat Assistant',
+    description: 'Experience TOMO - an advanced AI chat assistant with intelligent tools, voice capabilities, and real-time assistance.',
     images: ['/aj-logo.jpg'],
+    creator: '@tomoacademy',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://chat.tomoacademy.site',
+  },
+  category: 'technology',
+  classification: 'AI Chat Assistant',
+  applicationName: 'TOMO',
+  referrer: 'origin-when-cross-origin',
+  appleWebApp: {
+    capable: true,
+    title: 'TOMO',
+    statusBarStyle: 'default',
   },
 };
 
