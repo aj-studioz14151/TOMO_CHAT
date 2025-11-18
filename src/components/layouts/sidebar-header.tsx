@@ -77,7 +77,13 @@ export function SidebarHeaderShared({
                 height={32} 
                 className="rounded-full"
               />
-              <h4 className="font-bold">{title}</h4>
+              <Image 
+                src="/tomo-brand-name.png" 
+                alt="TOMO" 
+                width={80} 
+                height={24} 
+                className="object-contain"
+              />
               {showMobileToggle && (
                 <div
                   className="ml-auto block sm:hidden"
