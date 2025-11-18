@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { cn } from "lib/utils";
 import { useTranslations } from "next-intl";
 import { SocialAuthenticationProvider } from "app-types/authentication";
 import SocialProviders from "./social-providers";
