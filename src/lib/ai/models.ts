@@ -52,7 +52,7 @@ const together = process.env.TOGETHER_API_KEY
 // Azure-hosted models with Bearer token authentication
 const azureApiKey = process.env.AZURE_API_KEY;
 const azureBaseURL =
-  process.env.AZURE_BASE_URL || "https://flook.services.ai.azure.com/models";
+  process.env.AZURE_BASE_URL || "https://kamesh6592-7068-resource.services.ai.azure.com/models";
 
 // Azure OpenAI Chat Completions endpoint
 const azureOpenAIChatApiKey = process.env.AZURE_OPENAI_CHAT_API_KEY || process.env.AZURE_API_KEY;
