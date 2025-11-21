@@ -137,6 +137,7 @@ const staticModels = {
     ? {
         "grok-4-fast-non-reasoning": azureGrok("grok-4-fast-non-reasoning"),
         "grok-3": azureGrok("grok-3"),
+        "grok-3-mini": azureGrok("grok-3-mini"),
       }
     : {},
   deepseek: azureDeepseek
@@ -274,6 +275,7 @@ registerFileSupport(
   DEFAULT_FILE_PART_MIME_TYPES,
 );
 registerFileSupport(staticModels.xai["grok-3"], DEFAULT_FILE_PART_MIME_TYPES);
+registerFileSupport(staticModels.xai["grok-3-mini"], DEFAULT_FILE_PART_MIME_TYPES);
 registerFileSupport(
   staticModels.deepseek["DeepSeek-R1"],
   DEFAULT_FILE_PART_MIME_TYPES,
