@@ -46,6 +46,7 @@ export default function SignUpPage({
             height={120}
             className="object-contain rounded-full"
             priority
+            unoptimized
           />
         </div>
 
