@@ -90,6 +90,202 @@ export function ChatExport({ messages, chatTitle }: ChatExportProps) {
   const exportToPDF = async () => {
     setIsExporting(true);
     try {
+      // Generate HTML instead of direct PDF for better styling
+      let html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${chatTitle || "Chat Export"}</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #ffffff;
+            padding: 60px 80px;
+            line-height: 1.6;
+            color: #1f2937;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+        }
+        
+        .logo-text {
+            font-size: 24px;
+            font-weight: 400;
+            color: #1f2937;
+            letter-spacing: -0.5px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .text-content {
+            font-size: 13px;
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        
+        .code-block {
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .keyword { color: #7c3aed; font-weight: 600; }
+        .class-name { color: #0891b2; font-weight: 600; }
+        .method { color: #0891b2; }
+        .string { color: #059669; }
+        .comment { color: #6b7280; font-style: italic; }
+        .number { color: #ea580c; }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .footer p {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+        
+        .footer-icon {
+            text-align: center;
+            font-size: 20px;
+            color: #9ca3af;
+            margin: 30px 0;
+        }
+        
+        @media print {
+            body { padding: 40px; }
+            .code-block { break-inside: avoid; }
+            h2 { break-after: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="/aj-logo.jpg" alt="Logo" class="logo-icon" />
+        <div class="logo-text">TOMO Chat</div>
+    </div>
+    
+    <h1>${chatTitle || "Chat Export"}</h1>
+    <p class="subtitle">Exported on ${formatDate()}</p>
+`;
+
+      let messageCount = 0;
+      messages.forEach((message) => {
+        const textContent =
+          message.parts
+            ?.filter((part: any) => part.type === "text")
+            .map((part: any) => part.text)
+            .join("\n\n") || "";
+
+        if (!textContent.trim()) return;
+        
+        messageCount++;
+        const role = message.role === "user" ? "Question" : "Response";
+        
+        html += `    <h2>${messageCount}) ${role}</h2>\n`;
+        
+        // Check if content has code
+        const hasCode = textContent.includes('```') || 
+                       textContent.match(/\b(class|function|import|public|void)\b/);
+        
+        if (hasCode) {
+          let codeContent = textContent.replace(/```[\w]*\n?/g, '').trim();
+          
+          // Apply syntax highlighting
+          codeContent = codeContent
+            .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/\b(public|class|static|void|import|return|if|else|for|while|int|String|new|private|protected|extends|implements|package|try|catch|finally|throw|throws)\b/g, '<span class="keyword">$1</span>')
+            .replace(/\b([A-Z][a-zA-Z0-9_]*)\b/g, '<span class="class-name">$1</span>')
+            .replace(/"([^"]*)"/g, '<span class="string">"$1"</span>')
+            .replace(/\/\/(.*)/g, '<span class="comment">//$1</span>')
+            .replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+          
+          html += `    <div class="code-block"><pre>${codeContent}</pre></div>\n`;
+        } else {
+          html += `    <p class="text-content">${textContent.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>\n`;
+        }
+      });
+
+      html += `
+    <div class="footer">
+        <p>Total messages: ${messageCount} | Chat: ${chatTitle || "Untitled"}</p>
+        <div class="footer-icon">☘</div>
+    </div>
+</body>
+</html>`;
+
+      // Open HTML in new window for print/save as PDF
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+        
+        // Wait for content to load then trigger print dialog
+        printWindow.onload = () => {
+          setTimeout(() => {
+            printWindow.print();
+          }, 250);
+        };
+      }
+
+      setExportSuccess(true);
+      setTimeout(() => setExportSuccess(false), 2000);
+      
+      return; // Skip old PDF code
+      
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
@@ -134,7 +330,7 @@ export function ChatExport({ messages, chatTitle }: ChatExportProps) {
       yPosition += 15;
 
       // Process messages - each as numbered section
-      let messageCount = 0;
+      let pdfMessageCount = 0;
       for (let i = 0; i < messages.length; i++) {
         const message = messages[i];
         
@@ -147,7 +343,7 @@ export function ChatExport({ messages, chatTitle }: ChatExportProps) {
 
         if (!textContent.trim()) continue;
         
-        messageCount++;
+        pdfMessageCount++;
 
         // Check if we need a new page
         if (yPosition > pageHeight - 60) {
@@ -160,7 +356,7 @@ export function ChatExport({ messages, chatTitle }: ChatExportProps) {
         doc.setFont("helvetica", "bold");
         doc.setTextColor(17, 24, 39);
         const role = message.role === "user" ? "Question" : "Response";
-        doc.text(`${messageCount}) ${role}`, margin, yPosition);
+        doc.text(`${pdfMessageCount}) ${role}`, margin, yPosition);
         yPosition += 8;
 
         // Detect if content contains code
