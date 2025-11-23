@@ -97,19 +97,24 @@ export function ChatExport({ messages, chatTitle }: ChatExportProps) {
       const contentWidth = pageWidth - 2 * margin;
       let yPosition = 20;
 
-      // Perplexity-style Logo with hexagon shape
-      doc.setFillColor(13, 148, 136); // Teal
-      const hexSize = 4;
-      const hexX = margin + hexSize;
-      const hexY = yPosition - 1;
-      // Draw hexagon approximation
-      doc.triangle(hexX - hexSize, hexY, hexX, hexY - hexSize, hexX + hexSize, hexY, "F");
-      doc.triangle(hexX - hexSize, hexY, hexX, hexY + hexSize, hexX + hexSize, hexY, "F");
+      // Add AJ Logo image
+      try {
+        const logoImg = await fetch('/aj-logo.jpg').then(res => res.blob()).then(blob => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        });
+        doc.addImage(logoImg as string, 'JPEG', margin, yPosition - 5, 10, 10);
+      } catch (e) {
+        console.warn('Logo load failed, using fallback');
+      }
       
       doc.setTextColor(31, 41, 55); // Dark gray
       doc.setFontSize(18);
       doc.setFont("helvetica", "normal");
-      doc.text("perplexity", margin + 12, yPosition);
+      doc.text("TOMO Chat", margin + 14, yPosition);
       
       yPosition += 15;
 
