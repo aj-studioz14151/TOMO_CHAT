@@ -31,7 +31,7 @@ export function SidebarHeaderShared({
   onLinkClick,
   enableShortcuts = false,
 }: SidebarHeaderSharedProps) {
-  const { toggleSidebar, setOpenMobile, open } = useSidebar();
+  const { toggleSidebar, setOpenMobile } = useSidebar();
   const isMobile = useIsMobile();
   const pathname = usePathname();
   const currentPath = useRef<string | null>(null);
