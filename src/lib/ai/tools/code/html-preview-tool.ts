@@ -47,6 +47,15 @@ export const htmlPreviewSchema: JSONSchema7 = {
 };
 
 export const htmlPreviewTool = createTool({
-  description: `Create and display HTML pages with live preview. Use this when users request HTML pages, web designs, interactive demos, or visual components. The HTML will be rendered in an iframe with full CSS and JavaScript support, allowing users to see and interact with the result immediately.`,
+  description: `Create and display HTML pages with interactive live preview. ALWAYS use this tool when generating HTML code, creating web pages, designing layouts, or creating visual components. 
+
+Use this for:
+- HTML code examples and web pages
+- CSS styling demonstrations
+- JavaScript interactive demos
+- Forms and UI components
+- Any HTML/CSS/JS content
+
+The HTML will be rendered in an iframe with full CSS and JavaScript support, allowing users to see and interact with the result immediately. Do NOT just show HTML code as text - use this tool to render it.`,
   inputSchema: jsonSchemaToZod(htmlPreviewSchema),
 });
