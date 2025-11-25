@@ -126,7 +126,7 @@ export const HtmlPreview = memo(function HtmlPreview({
           <div className="relative">
             <CodeBlock
               code={html}
-              language="html"
+              lang="html"
               className="max-h-[500px] overflow-auto"
             />
           </div>
