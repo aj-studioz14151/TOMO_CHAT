@@ -715,6 +715,15 @@ const CodeExecutor = dynamic(
   },
 );
 
+const HtmlPreview = dynamic(
+  () =>
+    import("./tool-invocation/html-preview").then((mod) => mod.HtmlPreview),
+  {
+    ssr: false,
+    loading,
+  },
+);
+
 const ImageGeneratorToolInvocation = dynamic(
   () =>
     import("./tool-invocation/image-generator").then(
@@ -898,6 +907,16 @@ export const ToolMessagePart = memo(
             key={part.toolCallId}
             onResult={onToolCallDirect}
             type="python"
+          />
+        );
+      }
+
+      if (toolName === DefaultToolName.HtmlPreview) {
+        return (
+          <HtmlPreview
+            part={part}
+            key={part.toolCallId}
+            onResult={onToolCallDirect}
           />
         );
       }

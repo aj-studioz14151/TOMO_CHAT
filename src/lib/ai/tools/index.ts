@@ -15,6 +15,7 @@ export enum DefaultToolName {
   Http = "http",
   JavascriptExecution = "mini-javascript-execution",
   PythonExecution = "python-execution",
+  HtmlPreview = "html-preview",
 }
 
 export const SequentialThinkingToolName = "sequential-thinking";
