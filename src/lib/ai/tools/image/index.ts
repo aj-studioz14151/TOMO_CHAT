@@ -103,7 +103,7 @@ export const nanoBananaTool = createTool({
       return {
         images: resultImages,
         mode,
-        model: "gemini-2.5-flash-image",
+        model: process.env.GEMINI_IMAGE_MODEL || "gemini-2.0-flash-exp",
         guide:
           resultImages.length > 0
             ? "The image has been successfully generated and is now displayed above. If you need any edits, modifications, or adjustments to the image, please let me know."

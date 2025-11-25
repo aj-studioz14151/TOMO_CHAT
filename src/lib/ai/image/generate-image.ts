@@ -123,6 +123,9 @@ export const generateImageWithNanoBanana = async (
     throw new Error("GOOGLE_GENERATIVE_AI_API_KEY is not set");
   }
 
+  // Log API key info for debugging (only first/last chars for security)
+  logger.info(`Using Google API key: ${apiKey.slice(0, 4)}...${apiKey.slice(-4)}`);
+
   const ai = new GoogleGenAI({
     apiKey: apiKey,
   });
@@ -137,9 +140,13 @@ export const generateImageWithNanoBanana = async (
       parts: [{ text: options.prompt }],
     });
   }
+  // Use environment variable to allow model override, default to experimental model
+  const modelName = process.env.GEMINI_IMAGE_MODEL || "gemini-2.0-flash-exp";
+  logger.info(`Using Gemini image model: ${modelName}`);
+
   const response = await ai.models
     .generateContent({
-      model: "gemini-2.5-flash-image",
+      model: modelName,
       config: {
         abortSignal: options.abortSignal,
         responseModalities: ["IMAGE"],
@@ -147,7 +154,8 @@ export const generateImageWithNanoBanana = async (
       contents: geminiMessages,
     })
     .catch((err) => {
-      logger.error(err);
+      logger.error("Gemini image generation error:", err);
+      logger.error("Error details:", JSON.stringify(err, null, 2));
       
       // Parse error for better user feedback
       const errorMessage = err?.message || JSON.stringify(err);
