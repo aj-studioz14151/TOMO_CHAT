@@ -30,7 +30,12 @@ export function createUINode(
   };
 
   if (node.data.kind === NodeKind.Output) {
-    node.data.outputData = [];
+    node.data.outputData = [
+      {
+        key: "result",
+        source: undefined, // Will be configured by user or auto-detected
+      },
+    ];
   } else if (node.data.kind === NodeKind.LLM) {
     node.data.outputSchema = structuredClone(defaultLLMNodeOutputSchema);
     node.data.messages = [
