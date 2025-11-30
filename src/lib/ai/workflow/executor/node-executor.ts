@@ -124,9 +124,31 @@ export const llmNodeExecutor: NodeExecutor<LLMNodeData> = async ({
     };
   }
 
+  // For structured output, ensure messages contain JSON instruction
+  const structuredMessages = [...messages];
+  
+  // Add JSON instruction to the last user message or create a new one
+  const lastMessage = structuredMessages[structuredMessages.length - 1];
+  if (lastMessage && lastMessage.role === "user") {
+    // Append JSON instruction to existing user message
+    const currentContent = Array.isArray(lastMessage.content) 
+      ? lastMessage.content.map(part => part.type === 'text' ? part.text : '').join(' ')
+      : typeof lastMessage.content === 'string' 
+      ? lastMessage.content 
+      : '';
+    
+    lastMessage.content = currentContent + "\n\nPlease respond with valid JSON format.";
+  } else {
+    // Add a new user message with JSON instruction
+    structuredMessages.push({
+      role: "user",
+      content: "Please respond with valid JSON format.",
+    });
+  }
+
   const response = await generateObject({
     model,
-    messages: convertToModelMessages(messages),
+    messages: convertToModelMessages(structuredMessages),
     schema: jsonSchemaToZod(node.outputSchema.properties.answer),
     maxRetries: 3,
   });
