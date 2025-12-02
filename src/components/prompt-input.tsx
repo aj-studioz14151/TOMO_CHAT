@@ -414,7 +414,7 @@ export default function PromptInput({
     <div className="max-w-3xl mx-auto fade-in animate-in">
       <div className="z-10 mx-auto w-full max-w-3xl relative">
         <fieldset className="flex w-full min-w-0 max-w-full flex-col px-4">
-          <div className="shadow-lg overflow-hidden rounded-4xl backdrop-blur-sm transition-all duration-200 bg-muted/60 relative flex w-full flex-col cursor-text z-10 items-stretch focus-within:bg-muted hover:bg-muted focus-within:ring-muted hover:ring-muted">
+          <div className="shadow-lg overflow-hidden backdrop-blur-sm transition-all duration-200 bg-muted/60 relative flex w-full flex-col cursor-text z-10 items-stretch focus-within:bg-muted hover:bg-muted focus-within:ring-muted hover:ring-muted" style={{ borderRadius: 'var(--radius-lg)' }}>
             {mentions.length > 0 && (
               <div className="bg-input rounded-b-sm rounded-t-3xl p-3 flex flex-col gap-4 mx-2 my-2">
                 {mentions.map((mention, i) => {
