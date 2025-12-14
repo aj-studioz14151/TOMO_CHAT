@@ -5,6 +5,7 @@ import { highlight } from 'sugar-high';
 import React, { useCallback, useMemo, useState, lazy, Suspense } from 'react';
 import { cn } from "lib/utils"
 import { Check, Copy, WrapText, ArrowLeftRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 const geistMono = Geist_Mono({
   subsets: ['latin'],
@@ -86,7 +87,7 @@ const LazyCodeBlockComponent: React.FC<CodeBlockProps> = ({ children, language, 
       <div className="relative">
         <div
           className={cn(
-            'font-mono text-sm leading-relaxed p-2',
+            'font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4',
             isWrapped && 'whitespace-pre-wrap break-words',
             !isWrapped && 'whitespace-pre overflow-x-auto',
           )}
@@ -124,45 +125,51 @@ const SyncCodeBlock: React.FC<CodeBlockProps> = ({ language, children, elementKe
       await navigator.clipboard.writeText(children);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
+      toast.success('Code copied to clipboard');
     } catch (error) {
       console.error('Failed to copy code:', error);
+      toast.error('Failed to copy code');
     }
   }, [children]);
 
   const toggleWrap = useCallback(() => {
-    setIsWrapped((prev) => !prev);
+    setIsWrapped((prev) => {
+      const newState = !prev;
+      toast.success(newState ? 'Code wrap enabled' : 'Code wrap disabled');
+      return newState;
+    });
   }, []);
 
   return (
     <div className="group relative my-5 rounded-xl border border-border bg-accent overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2 bg-accent border-b border-border">
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-accent border-b border-border">
         <div className="flex items-center gap-2">
           {language && (
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{language}</span>
+            <span className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">{language}</span>
           )}
-          <span className="text-xs text-muted-foreground">{lineCount} lines</span>
+          <span className="text-xs sm:text-sm text-muted-foreground">{lineCount} lines</span>
         </div>
 
         <div className="flex gap-1">
           <button
             onClick={toggleWrap}
             className={cn(
-              'p-1 rounded border border-border bg-background shadow-sm transition-colors',
+              'p-1.5 sm:p-1 rounded border border-border bg-background shadow-sm transition-colors',
               isWrapped ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
             )}
             title={isWrapped ? 'Disable wrap' : 'Enable wrap'}
           >
-            {isWrapped ? <ArrowLeftRight size={12} /> : <WrapText size={12} />}
+            {isWrapped ? <ArrowLeftRight size={14} className="sm:w-3 sm:h-3" /> : <WrapText size={14} className="sm:w-3 sm:h-3" />}
           </button>
           <button
             onClick={handleCopy}
             className={cn(
-              'p-1 rounded border border-border bg-background shadow-sm transition-colors',
+              'p-1.5 sm:p-1 rounded border border-border bg-background shadow-sm transition-colors',
               isCopied ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
             )}
             title={isCopied ? 'Copied!' : 'Copy code'}
           >
-            {isCopied ? <Check size={12} /> : <Copy size={12} />}
+            {isCopied ? <Check size={14} className="sm:w-3 sm:h-3" /> : <Copy size={14} className="sm:w-3 sm:h-3" />}
           </button>
         </div>
       </div>
@@ -170,7 +177,7 @@ const SyncCodeBlock: React.FC<CodeBlockProps> = ({ language, children, elementKe
       <div className="relative">
         <div
           className={cn(
-            'font-mono text-sm leading-relaxed p-4',
+            'font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4',
             'selection:bg-primary/20 selection:text-foreground',
             isWrapped && 'whitespace-pre-wrap break-words',
             !isWrapped && 'whitespace-pre overflow-x-auto',
@@ -195,15 +202,15 @@ const StyledCodeBlock: React.FC<CodeBlockProps> = React.memo(
       return (
         <Suspense fallback={
           <div className="group relative my-5 rounded-xl border border-border bg-accent overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-2 bg-accent border-b border-border">
+            <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-accent border-b border-border">
               <div className="flex items-center gap-2">
                 {language && (
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{language}</span>
+                  <span className="text-xs sm:text-sm font-medium text-muted-foreground uppercase tracking-wide">{language}</span>
                 )}
-                <span className="text-xs text-muted-foreground">{children.split('\n').length} lines</span>
+                <span className="text-xs sm:text-sm text-muted-foreground">{children.split('\n').length} lines</span>
               </div>
             </div>
-            <div className="font-mono text-sm leading-relaxed p-4 text-muted-foreground">
+            <div className="font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4 text-muted-foreground">
               <div className="animate-pulse">Loading code block...</div>
             </div>
           </div>

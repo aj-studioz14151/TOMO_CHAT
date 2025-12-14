@@ -127,6 +127,7 @@ export function AppSidebarUserInner(props: {
               <Settings2 className="size-4 text-foreground" />
               <span>{t("chatPreferences")}</span>
             </DropdownMenuItem>
+            <MobileThemeToggle />
             <SelectTheme />
             <SelectLanguage />
             <DropdownMenuSeparator />
@@ -178,6 +179,47 @@ export function AppSidebarUserInner(props: {
   );
 }
 
+// Mobile-friendly theme toggle component
+function MobileThemeToggle() {
+  const t = useTranslations("Layout");
+  const { theme = "light", setTheme } = useTheme();
+
+  return (
+    <DropdownMenuItem
+      className="cursor-pointer sm:hidden"
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+    >
+      <div className="flex items-center gap-3 w-full">
+        <Palette className="size-4 text-foreground" />
+        <span>{t("theme")}</span>
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">
+            {capitalizeFirstLetter(theme)}
+          </span>
+          <div className="flex items-center border rounded-full p-0.5">
+            <div
+              className={cn(
+                "p-1 rounded-full transition-all",
+                theme === "dark" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <MoonStar className="size-3" />
+            </div>
+            <div
+              className={cn(
+                "p-1 rounded-full transition-all",
+                theme === "light" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <Sun className="size-3" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </DropdownMenuItem>
+  );
+}
+
 function SelectTheme() {
   const t = useTranslations("Layout");
 
@@ -188,7 +230,7 @@ function SelectTheme() {
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger
-        className="flex items-center"
+        className="hidden sm:flex items-center"
         icon={
           <>
             <span className="text-muted-foreground text-xs min-w-0 truncate">
@@ -204,34 +246,42 @@ function SelectTheme() {
         <span className="mr-auto">{t("theme")}</span>
       </DropdownMenuSubTrigger>
       <DropdownMenuPortal>
-        <DropdownMenuSubContent className="w-48">
-          <DropdownMenuLabel className="text-muted-foreground w-full flex items-center">
-            <span className="text-muted-foreground text-xs mr-2 select-none">
+        <DropdownMenuSubContent className="w-56 sm:w-48 z-[100] max-h-[80vh] overflow-y-auto">
+          <DropdownMenuLabel className="text-muted-foreground w-full flex items-center py-3">
+            <span className="text-sm mr-3 select-none font-medium">
               {capitalizeFirstLetter(theme)}
             </span>
             <div className="flex-1" />
 
             <div
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="cursor-pointer border rounded-full flex items-center"
+              onClick={(e) => {
+                e.stopPropagation();
+                setTheme(theme === "light" ? "dark" : "light");
+              }}
+              className="cursor-pointer border-2 rounded-full flex items-center p-0.5 transition-all duration-200 hover:shadow-md"
+              role="button"
+              tabIndex={0}
+              aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
             >
               <div
                 className={cn(
+                  "p-1.5 rounded-full transition-all duration-200",
                   theme === "dark" &&
-                    "bg-accent ring ring-muted-foreground/40 text-foreground",
-                  "p-1 rounded-full",
+                    "bg-primary text-primary-foreground shadow-sm",
+                  theme === "light" && "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <MoonStar className="size-3" />
+                <MoonStar className="size-3.5" />
               </div>
               <div
                 className={cn(
+                  "p-1.5 rounded-full transition-all duration-200",
                   theme === "light" &&
-                    "bg-accent ring ring-muted-foreground/40 text-foreground",
-                  "p-1 rounded-full",
+                    "bg-primary text-primary-foreground shadow-sm",
+                  theme === "dark" && "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Sun className="size-3" />
+                <Sun className="size-3.5" />
               </div>
             </div>
           </DropdownMenuLabel>
