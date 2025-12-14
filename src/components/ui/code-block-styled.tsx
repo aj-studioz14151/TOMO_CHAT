@@ -88,7 +88,7 @@ const LazyCodeBlockComponent: React.FC<CodeBlockProps> = ({ children, language, 
         <div
           className={cn(
             'font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4',
-            'min-h-[200px] sm:min-h-[150px]', // Increased minimum height for mobile
+            'min-h-[250px] sm:min-h-[150px]', // Increased minimum height for mobile
             isWrapped && 'whitespace-pre-wrap break-words',
             !isWrapped && 'whitespace-pre overflow-x-auto',
           )}
@@ -180,7 +180,7 @@ const SyncCodeBlock: React.FC<CodeBlockProps> = ({ language, children, elementKe
           className={cn(
             'font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4',
             'selection:bg-primary/20 selection:text-foreground',
-            'min-h-[200px] sm:min-h-[150px]', // Increased minimum height for mobile
+            'min-h-[250px] sm:min-h-[150px]', // Increased minimum height for mobile
             isWrapped && 'whitespace-pre-wrap break-words',
             !isWrapped && 'whitespace-pre overflow-x-auto',
           )}
@@ -212,7 +212,7 @@ const StyledCodeBlock: React.FC<CodeBlockProps> = React.memo(
                 <span className="text-xs sm:text-sm text-muted-foreground">{children.split('\n').length} lines</span>
               </div>
             </div>
-            <div className="font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4 text-muted-foreground min-h-[200px] sm:min-h-[150px] flex items-center justify-center">
+            <div className="font-mono text-sm sm:text-base leading-relaxed p-3 sm:p-4 text-muted-foreground min-h-[250px] sm:min-h-[150px] flex items-center justify-center">
               <div className="animate-pulse">Loading code block...</div>
             </div>
           </div>
