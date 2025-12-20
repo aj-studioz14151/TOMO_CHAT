@@ -182,25 +182,27 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             </p>
           </div>
         </div>
-          {testimonials.length > 0 && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full overflow-hidden">
-              <div className="animate-scroll-testimonials">
-                {/* First complete set */}
-                {testimonials.map((testimonial, index) => (
-                  <TestimonialCard key={`set1-${index}`} testimonial={testimonial} delay="" />
-                ))}
-                {/* Second complete set for seamless loop */}
-                {testimonials.map((testimonial, index) => (
-                  <TestimonialCard key={`set2-${index}`} testimonial={testimonial} delay="" />
-                ))}
-                {/* Third complete set for buffer */}
-                {testimonials.map((testimonial, index) => (
-                  <TestimonialCard key={`set3-${index}`} testimonial={testimonial} delay="" />
-                ))}
-              </div>
+        
+        {/* Testimonials */}
+        {testimonials.length > 0 && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full overflow-hidden">
+            <div className="animate-scroll-testimonials">
+              {/* First complete set */}
+              {testimonials.map((testimonial, index) => (
+                <TestimonialCard key={`set1-${index}`} testimonial={testimonial} delay="" />
+              ))}
+              {/* Second complete set for seamless loop */}
+              {testimonials.map((testimonial, index) => (
+                <TestimonialCard key={`set2-${index}`} testimonial={testimonial} delay="" />
+              ))}
+              {/* Third complete set for buffer */}
+              {testimonials.map((testimonial, index) => (
+                <TestimonialCard key={`set3-${index}`} testimonial={testimonial} delay="" />
+              ))}
             </div>
-          )}
-        </section>
+          </div>
+        )}
+      </section>
       )}
     </div>
   );
