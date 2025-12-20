@@ -154,9 +154,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
       {/* Right column: hero image + testimonials */}
       {heroImageSrc && (
-        <section className="hidden md:flex flex-1 relative overflow-hidden">
+        <section className="hidden md:flex flex-1 relative overflow-hidden p-8">
           <div 
-            className="absolute inset-8 bg-cover bg-center bg-no-repeat rounded-3xl shadow-2xl"
+            className="w-full h-full bg-cover bg-center bg-no-repeat rounded-3xl shadow-2xl"
             style={{ backgroundImage: `url(${heroImageSrc})` }}
           ></div>
           {testimonials.length > 0 && (
