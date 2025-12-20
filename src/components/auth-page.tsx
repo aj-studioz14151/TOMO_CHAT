@@ -79,11 +79,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="h-screen flex flex-col md:flex-row font-geist w-screen overflow-hidden">
+    <div className="auth-page h-screen flex flex-col md:flex-row font-geist w-screen overflow-hidden fixed inset-0">
       {/* Left column: auth form */}
-      <section className="flex-1 flex items-center justify-center p-8 overflow-y-auto">
-        <div className="w-full max-w-md">
-          <div className="flex flex-col gap-6">
+      <section className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden">
+        <div className="w-full max-w-md max-h-screen overflow-hidden">
+          <div className="flex flex-col gap-4 md:gap-6">
             <h1 className="animate-element animate-delay-100 text-4xl md:text-5xl font-semibold leading-tight">{title}</h1>
             <p className="animate-element animate-delay-200 text-muted-foreground">{description}</p>
 
