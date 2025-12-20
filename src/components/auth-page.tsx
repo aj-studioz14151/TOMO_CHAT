@@ -160,23 +160,19 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             style={{ backgroundImage: `url(${heroImageSrc})` }}
           ></div>
           {testimonials.length > 0 && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full px-8 overflow-hidden">
-              <div className="flex gap-4 animate-scroll-testimonials">
-                {/* First set of testimonials */}
-                {testimonials.slice(0, 2).map((testimonial, index) => (
-                  <TestimonialCard key={`first-${index}`} testimonial={testimonial} delay={`animate-delay-${1000 + index * 200}`} />
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full overflow-hidden">
+              <div className="animate-scroll-testimonials">
+                {/* First complete set */}
+                {testimonials.map((testimonial, index) => (
+                  <TestimonialCard key={`set1-${index}`} testimonial={testimonial} delay="" />
                 ))}
-                {/* Second set for seamless loop */}
-                {testimonials.slice(2, 4).map((testimonial, index) => (
-                  <TestimonialCard key={`second-${index}`} testimonial={testimonial} delay={`animate-delay-${1400 + index * 200}`} />
+                {/* Second complete set for seamless loop */}
+                {testimonials.map((testimonial, index) => (
+                  <TestimonialCard key={`set2-${index}`} testimonial={testimonial} delay="" />
                 ))}
-                {/* Third set for seamless loop */}
-                {testimonials.slice(4, 6).map((testimonial, index) => (
-                  <TestimonialCard key={`third-${index}`} testimonial={testimonial} delay={`animate-delay-${1800 + index * 200}`} />
-                ))}
-                {/* Loop back to first for infinite effect */}
-                {testimonials.slice(0, 2).map((testimonial, index) => (
-                  <TestimonialCard key={`loop-${index}`} testimonial={testimonial} delay={`animate-delay-${2200 + index * 200}`} />
+                {/* Third complete set for buffer */}
+                {testimonials.map((testimonial, index) => (
+                  <TestimonialCard key={`set3-${index}`} testimonial={testimonial} delay="" />
                 ))}
               </div>
             </div>

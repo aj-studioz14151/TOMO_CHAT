@@ -1713,17 +1713,20 @@
       transform: translateX(0);
     }
     100% {
-      transform: translateX(-100%);
+      transform: translateX(-50%);
     }
   }
 
   .animate-scroll-testimonials {
-    animation: scroll-testimonials 20s linear infinite;
+    animation: scroll-testimonials 30s linear infinite;
     width: max-content;
+    display: flex;
+    gap: 1rem;
   }
 
+  /* Remove hover pause for continuous scroll */
   .animate-scroll-testimonials:hover {
-    animation-play-state: paused;
+    animation-play-state: running;
   }
 
   /* Prevent scrolling on auth pages */
