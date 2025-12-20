@@ -58,10 +58,46 @@ export default function NewSignInWrapper({
 
   const testimonials = [
     {
-      avatarSrc: "/image_1760628157519.jpeg",
-      name: "TOMO Chat",
-      handle: "@tomo_chat",
-      text: "Seamless communication with advanced AI capabilities."
+      avatarSrc: "/openai.png",
+      name: "GPT Models",
+      handle: "@openai",
+      text: "Experience the power of GPT-4 and other advanced OpenAI models for intelligent conversations."
+    },
+    {
+      avatarSrc: "/gemini.png", 
+      name: "Gemini AI",
+      handle: "@google",
+      text: "Google's most capable AI with advanced reasoning and multimodal capabilities."
+    },
+    {
+      avatarSrc: "/claude-color.png",
+      name: "Claude",
+      handle: "@anthropic", 
+      text: "Anthropic's Claude models for thoughtful, nuanced AI conversations and analysis."
+    },
+    {
+      avatarSrc: "/grok.png",
+      name: "Grok",
+      handle: "@xai",
+      text: "X.AI's Grok models with real-time information and unique personality."
+    },
+    {
+      avatarSrc: "/deepseek-color.png",
+      name: "DeepSeek",
+      handle: "@deepseek",
+      text: "Advanced reasoning models with exceptional performance in complex tasks."
+    },
+    {
+      avatarSrc: "/qwen.png",
+      name: "Qwen",
+      handle: "@alibaba",
+      text: "Alibaba's Qwen models offering multilingual capabilities and efficiency."
+    },
+    {
+      avatarSrc: "/kimi.png",
+      name: "Kimi",
+      handle: "@moonshot",
+      text: "Moonshot's Kimi with long-context understanding and powerful reasoning."
     }
   ];
 
