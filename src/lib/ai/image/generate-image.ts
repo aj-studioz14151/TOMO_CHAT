@@ -1,22 +1,10 @@
 "use server";
-import {
-  GoogleGenAI,
-  Part as GeminiPart,
-  Content as GeminiMessage,
-} from "@google/genai";
-import { safe, watchError } from "ts-safe";
-import { getBase64Data } from "lib/file-storage/storage-utils";
-import { serverFileStorage } from "lib/file-storage";
 import { xai } from "@ai-sdk/xai";
 
 import {
-  FilePart,
-  ImagePart,
   ModelMessage,
-  TextPart,
   experimental_generateImage,
 } from "ai";
-import { isString } from "lib/utils";
 import logger from "logger";
 
 type GenerateImageOptions = {
@@ -37,63 +25,51 @@ export type GeneratedImageResult = {
 export async function generateImageWithOpenAI(
   options: GenerateImageOptions,
 ): Promise<GeneratedImageResult> {
-  // Azure OpenAI DALL-E-3 endpoint
-  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  // Stability AI endpoint
+  const apiKey = process.env.STABLE_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "AZURE_OPENAI_API_KEY is not set. Please configure it in your .env file.",
+      "STABLE_API_KEY is not set. Please configure it in your .env file.",
     );
   }
-  const endpoint =
-    process.env.AZURE_OPENAI_ENDPOINT ||
-    "https://flook.cognitiveservices.azure.com/openai/deployments/dall-e-3/images/generations?api-version=2024-02-01";
+  const endpoint = "https://api.stability.ai/v2beta/stable-image/generate/ultra";
 
   try {
+    const formData = new FormData();
+    formData.append('prompt', options.prompt);
+    formData.append('output_format', 'webp');
+    
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "authorization": `Bearer ${apiKey}`,
+        "accept": "image/*",
       },
-      body: JSON.stringify({
-        prompt: options.prompt,
-        size: "1024x1024",
-        style: "vivid",
-        quality: "standard",
-        n: 1,
-      }),
+      body: formData,
       signal: options.abortSignal,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(
-        `Azure OpenAI API error: ${response.statusText} - ${errorText}`,
+        `Stability AI API error: ${response.statusText} - ${errorText}`,
       );
     }
 
-    const result = await response.json();
-    const imageUrl = result.data?.[0]?.url;
-
-    if (!imageUrl) {
-      throw new Error("No image URL in response");
-    }
-
-    // Download the image from the URL
-    const imageResponse = await fetch(imageUrl);
-    const arrayBuffer = await imageResponse.arrayBuffer();
+    // Response is the image binary data
+    const arrayBuffer = await response.arrayBuffer();
     const base64 = Buffer.from(arrayBuffer).toString("base64");
 
     return {
       images: [
         {
           base64,
-          mimeType: "image/png",
+          mimeType: "image/webp",
         },
       ],
     };
   } catch (error) {
-    logger.error("Azure OpenAI image generation error:", error);
+    logger.error("Stability AI image generation error:", error);
     throw error;
   }
 }
@@ -118,169 +94,117 @@ export async function generateImageWithXAI(
 export const generateImageWithNanoBanana = async (
   options: GenerateImageOptions,
 ): Promise<GeneratedImageResult> => {
-  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  const apiKey = process.env.REPLICATE_API_TOKEN;
   if (!apiKey) {
-    throw new Error("GOOGLE_GENERATIVE_AI_API_KEY is not set");
+    throw new Error("REPLICATE_API_TOKEN is not set");
   }
 
   // Log API key info for debugging (only first/last chars for security)
-  logger.info(`Using Google API key: ${apiKey.slice(0, 4)}...${apiKey.slice(-4)}`);
+  logger.info(`Using Replicate API key: ${apiKey.slice(0, 4)}...${apiKey.slice(-4)}`);
 
-  const ai = new GoogleGenAI({
-    apiKey: apiKey,
-  });
+  const endpoint = "https://api.replicate.com/v1/models/google/imagen-4/predictions";
 
-  const geminiMessages: GeminiMessage[] = await safe(options.messages || [])
-    .map((messages) => Promise.all(messages.map(convertToGeminiMessage)))
-    .watch(watchError(logger.error))
-    .unwrap();
-  if (options.prompt) {
-    geminiMessages.push({
-      role: "user",
-      parts: [{ text: options.prompt }],
-    });
-  }
-  // Use environment variable to allow model override, default to experimental model
-  const modelName = process.env.GEMINI_IMAGE_MODEL || "gemini-2.0-flash-exp";
-  logger.info(`Using Gemini image model: ${modelName}`);
-
-  const response = await ai.models
-    .generateContent({
-      model: modelName,
-      config: {
-        abortSignal: options.abortSignal,
-        responseModalities: ["IMAGE"],
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
       },
-      contents: geminiMessages,
-    })
-    .catch((err) => {
-      logger.error("Gemini image generation error:", err);
-      logger.error("Error details:", JSON.stringify(err, null, 2));
-      
-      // Parse error for better user feedback
-      const errorMessage = err?.message || JSON.stringify(err);
-      
-      // Check for quota exceeded errors
-      if (errorMessage.includes('RESOURCE_EXHAUSTED') || errorMessage.includes('Quota exceeded')) {
-        throw new Error(
-          "I've reached the daily image generation limit for this service. Please try again later or contact support to upgrade your plan for unlimited access."
-        );
-      }
-      
-      // Check for API key errors
-      if (errorMessage.includes('API key') || errorMessage.includes('authentication')) {
-        throw new Error(
-          "There's an issue with the image generation service authentication. Please contact support."
-        );
-      }
-      
-      // Check for invalid requests
-      if (errorMessage.includes('INVALID_ARGUMENT')) {
-        throw new Error(
-          "The image request couldn't be processed. Please try rephrasing your image description."
-        );
-      }
-      
-      // Generic error with helpful message
-      throw new Error(
-        "I encountered an issue while generating the image. Please try again or rephrase your request."
-      );
-    });
-  return (
-    response.candidates?.reduce(
-      (acc, candidate) => {
-        const images =
-          candidate.content?.parts
-            ?.filter((part) => part.inlineData)
-            .map((p) => ({
-              base64: p.inlineData!.data!,
-              mimeType: p.inlineData!.mimeType,
-            })) ?? [];
-        acc.images.push(...images);
-        return acc;
-      },
-      { images: [] as GeneratedImage[] },
-    ) || { images: [] as GeneratedImage[] }
-  );
-};
-
-async function convertToGeminiMessage(
-  message: ModelMessage,
-): Promise<GeminiMessage> {
-  const getBase64DataSmart = async (input: {
-    data: string | Uint8Array | ArrayBuffer | Buffer | URL;
-    mimeType: string;
-  }): Promise<{ data: string; mimeType: string }> => {
-    if (
-      typeof input.data === "string" &&
-      (input.data.startsWith("http://") || input.data.startsWith("https://"))
-    ) {
-      // Try fetching directly (public URLs)
-      try {
-        const resp = await fetch(input.data);
-        if (resp.ok) {
-          const buf = Buffer.from(await resp.arrayBuffer());
-          return { data: buf.toString("base64"), mimeType: input.mimeType };
+      body: JSON.stringify({
+        input: {
+          prompt: options.prompt,
+          output_format: "webp",
+          output_quality: 90,
+          aspect_ratio: "1:1"
         }
-      } catch {
-        // fall through to storage fallback
-      }
+      }),
+      signal: options.abortSignal,
+    });
 
-      // Fallback: derive key and download via storage backend (works for private buckets)
-      try {
-        const u = new URL(input.data as string);
-        const key = decodeURIComponent(u.pathname.replace(/^\//, ""));
-        const buf = await serverFileStorage.download(key);
-        return { data: buf.toString("base64"), mimeType: input.mimeType };
-      } catch {
-        // Ignore and fall back to generic helper below
-      }
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Replicate API error: ${response.statusText} - ${errorText}`,
+      );
     }
 
-    // Default fallback: use generic helper (handles base64, buffers, blobs, etc.)
-    return getBase64Data(input);
-  };
-  const parts = isString(message.content)
-    ? ([{ text: message.content }] as GeminiPart[])
-    : await Promise.all(
-        message.content.map(async (content) => {
-          if (content.type == "file") {
-            const part = content as FilePart;
-            const data = await getBase64DataSmart({
-              data: part.data,
-              mimeType: part.mediaType!,
-            });
-            return {
-              inlineData: data,
-            } as GeminiPart;
-          }
-          if (content.type == "text") {
-            const part = content as TextPart;
-            return {
-              text: part.text,
-            };
-          }
-          if (content.type == "image") {
-            const part = content as ImagePart;
-            const data = await getBase64DataSmart({
-              data: part.image,
-              mimeType: part.mediaType!,
-            });
-            return {
-              inlineData: data,
-            };
-          }
-          return null;
-        }),
-      )
-        .then((parts) => parts.filter(Boolean) as GeminiPart[])
-        .catch((err) => {
-          logger.withTag("convertToGeminiMessage").error(err);
-          throw err;
-        });
+    const result = await response.json();
+    const predictionId = result.id;
 
-  return {
-    role: message.role == "user" ? "user" : "model",
-    parts,
-  };
-}
+    // Poll for completion
+    let pollResponse;
+    let attempts = 0;
+    const maxAttempts = 30; // 30 attempts with 2s delay = 1 minute timeout
+    
+    do {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+      
+      pollResponse = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+        },
+      });
+      
+      const pollResult = await pollResponse.json();
+      
+      if (pollResult.status === "succeeded") {
+        const imageUrl = pollResult.output?.[0] || pollResult.output;
+        
+        if (!imageUrl) {
+          throw new Error("No image URL in Replicate response");
+        }
+        
+        // Download the image
+        const imageResponse = await fetch(imageUrl);
+        const arrayBuffer = await imageResponse.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString("base64");
+        
+        return {
+          images: [
+            {
+              base64,
+              mimeType: "image/webp",
+            },
+          ],
+        };
+      } else if (pollResult.status === "failed") {
+        throw new Error(`Image generation failed: ${pollResult.error || 'Unknown error'}`);
+      }
+      
+      attempts++;
+    } while (attempts < maxAttempts);
+    
+    throw new Error("Image generation timed out");
+    
+  } catch (error) {
+    logger.error("Replicate image generation error:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    // Check for quota exceeded errors
+    if (errorMessage.includes('RESOURCE_EXHAUSTED') || errorMessage.includes('Quota exceeded')) {
+      throw new Error(
+        "I've reached the daily image generation limit for this service. Please try again later or contact support to upgrade your plan for unlimited access."
+      );
+    }
+    
+    // Check for API key errors
+    if (errorMessage.includes('API key') || errorMessage.includes('authentication')) {
+      throw new Error(
+        "There's an issue with the image generation service authentication. Please contact support."
+      );
+    }
+    
+    // Check for invalid requests
+    if (errorMessage.includes('INVALID_ARGUMENT')) {
+      throw new Error(
+        "The image request couldn't be processed. Please try rephrasing your image description."
+      );
+    }
+    
+    // Generic error with helpful message
+    throw new Error(
+      "I encountered an issue while generating the image. Please try again or rephrase your request."
+    );
+  }
+};

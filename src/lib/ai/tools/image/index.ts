@@ -103,7 +103,7 @@ export const nanoBananaTool = createTool({
       return {
         images: resultImages,
         mode,
-        model: process.env.GEMINI_IMAGE_MODEL || "gemini-2.0-flash-exp",
+        model: "google-imagen-4-replicate",
         guide:
           resultImages.length > 0
             ? "The image has been successfully generated and is now displayed above. If you need any edits, modifications, or adjustments to the image, please let me know."
@@ -189,7 +189,7 @@ export const openaiImageTool = createTool({
         return {
           images: [{ url: uploadedImage.sourceUrl, mimeType }],
           mode,
-          model: "dall-e-3",
+          model: "stability-ai-ultra",
           guide:
             "The image has been successfully generated using Azure DALL-E-3 and is now displayed above. If you need any edits, modifications, or adjustments to the image, please let me know.",
         };

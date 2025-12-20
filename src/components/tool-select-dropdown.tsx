@@ -1071,7 +1071,7 @@ function ImageGeneratorSelector({
               className="cursor-pointer"
             >
               <GeminiIcon className="mr-2 size-4" />
-              Gemini (Nano Banana)
+              Google Imagen-4 (Replicate)
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={modelInfo?.isToolCallUnsupported}
@@ -1079,7 +1079,7 @@ function ImageGeneratorSelector({
               className="cursor-pointer"
             >
               <OpenAIIcon className="mr-2 size-4" />
-              OpenAI (Azure DALL-E-3)
+              Stability AI Ultra
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuPortal>

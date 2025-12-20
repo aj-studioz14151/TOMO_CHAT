@@ -1,4 +1,4 @@
-import SignUpPage from "@/components/auth/sign-up";
+import NewSignUpWrapper from "@/components/auth/new-sign-up-wrapper";
 import { getAuthConfig } from "auth/config";
 import { getIsFirstUser } from "lib/auth/server";
 import { redirect } from "next/navigation";
@@ -14,16 +14,18 @@ export default async function SignUp() {
   if (!signUpEnabled) {
     redirect("/sign-in");
   }
+  
   const enabledProviders = (
     Object.keys(
       socialAuthenticationProviders,
     ) as (keyof typeof socialAuthenticationProviders)[]
   ).filter((key) => socialAuthenticationProviders[key]);
+  
   return (
-    <SignUpPage
-      isFirstUser={isFirstUser}
+    <NewSignUpWrapper
       emailAndPasswordEnabled={emailAndPasswordEnabled}
       socialAuthenticationProviders={enabledProviders}
+      isFirstUser={isFirstUser}
     />
   );
 }
