@@ -127,10 +127,8 @@ export const SignInPage: React.FC<SignInPageProps> = ({
 
       {/* Right column: hero image + testimonials */}
       {heroImageSrc && (
-        <section className="hidden md:block flex-1 relative">
-          <div className="absolute inset-0 bg-black">
-            <div className="animate-slide-right animate-delay-300 m-8 h-[calc(100%-4rem)] rounded-3xl bg-cover bg-center shadow-2xl" style={{ backgroundImage: `url(${heroImageSrc})` }}></div>
-          </div>
+        <section className="hidden md:block flex-1 relative rounded-3xl overflow-hidden">
+          <div className="animate-slide-right animate-delay-300 absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${heroImageSrc})` }}></div>
           {testimonials.length > 0 && (
             <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 px-8 w-full justify-center">
               <TestimonialCard testimonial={testimonials[0]} delay="animate-delay-1000" />
