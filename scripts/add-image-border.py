@@ -92,20 +92,20 @@ def add_curved_border(input_path, output_path, border_width=10, corner_radius=20
 def main():
     # Paths
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    input_path = os.path.join(base_dir, 'public', 'tomo-image.png')
-    output_path = os.path.join(base_dir, 'public', 'tomo-image.png')
+    input_path = os.path.join(base_dir, 'public', 'meowl.png')
+    output_path = os.path.join(base_dir, 'public', 'meowl.png')
     
     # Check if input file exists
     if not os.path.exists(input_path):
         print(f"Error: Input file not found: {input_path}")
         return
     
-    # Add curved border with white color
+    # Add curved border with white color (more circular)
     add_curved_border(
         input_path=input_path,
         output_path=output_path,
-        border_width=15,  # 15px white border
-        corner_radius=25, # Nicely curved corners
+        border_width=20,  # 20px white border
+        corner_radius=50, # More circular corners
         border_color=(255, 255, 255, 255)  # White border
     )
 

@@ -114,7 +114,7 @@ export default function NewSignInWrapper({
         </div>
       }
       description="Sign in to continue your conversations and unlock powerful AI features."
-      heroImageSrc="/login-page.png"
+      heroImageSrc="/meowl.png"
       testimonials={testimonials}
       onSubmit={emailAndPasswordEnabled ? handleSignIn : undefined}
       onGoogleSignIn={socialAuthenticationProviders.includes("google") ? handleGoogleSignIn : undefined}
