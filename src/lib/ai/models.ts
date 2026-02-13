@@ -4,7 +4,6 @@ import { createOllama } from "ollama-ai-provider-v2";
 import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import { anthropic } from "@ai-sdk/anthropic";
-import { LanguageModelV2 } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { LanguageModel } from "ai";
 import { mistral } from "@ai-sdk/mistral";
@@ -35,65 +34,72 @@ const groq = createGroq({
 // Together AI - Free tier with generous limits
 const together = process.env.TOGETHER_API_KEY
   ? createOpenAICompatible({
-    name: "together",
-    apiKey: process.env.TOGETHER_API_KEY,
-    baseURL: "https://api.together.xyz/v1",
-  })
+      name: "together",
+      apiKey: process.env.TOGETHER_API_KEY,
+      baseURL: "https://api.together.xyz/v1",
+    })
   : null;
 
 // Azure-hosted models with Bearer token authentication
 
 // DeepSeek configuration
 const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
-const deepseekBaseURL = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com/v1";
+const deepseekBaseURL =
+  process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com/v1";
 
 const xaiApiKey = process.env.XAI_API_KEY;
 
 // Azure OpenAI Chat Completions endpoint
-const azureOpenAIChatApiKey = process.env.AZURE_OPENAI_CHAT_API_KEY || process.env.AZURE_API_KEY;
-const azureOpenAIChatBaseURL = process.env.AZURE_OPENAI_CHAT_BASE_URL ||
+const azureOpenAIChatApiKey =
+  process.env.AZURE_OPENAI_CHAT_API_KEY || process.env.AZURE_API_KEY;
+const azureOpenAIChatBaseURL =
+  process.env.AZURE_OPENAI_CHAT_BASE_URL ||
   "https://kamesh6592-7068-resource.cognitiveservices.azure.com/openai/deployments/";
 
 // Azure OpenAI Responses endpoint (for GPT-5-mini)
-const azureOpenAIResponsesApiKey = process.env.AZURE_OPENAI_RESPONSES_API_KEY || process.env.AZURE_API_KEY;
-const azureOpenAIResponsesBaseURL = process.env.AZURE_OPENAI_RESPONSES_BASE_URL ||
+const azureOpenAIResponsesApiKey =
+  process.env.AZURE_OPENAI_RESPONSES_API_KEY || process.env.AZURE_API_KEY;
+const azureOpenAIResponsesBaseURL =
+  process.env.AZURE_OPENAI_RESPONSES_BASE_URL ||
   "https://kamesh6592-7068-resource.cognitiveservices.azure.com/openai/deployments/";
 
 // Create direct providers
 const directDeepseek = deepseekApiKey
   ? createOpenAICompatible({
-    name: "deepseek",
-    apiKey: deepseekApiKey,
-    baseURL: deepseekBaseURL,
-  })
+      name: "deepseek",
+      apiKey: deepseekApiKey,
+      baseURL: deepseekBaseURL,
+    })
   : null;
 
-const directXai = xaiApiKey
-  ? xai
-  : null;
+const directXai = xaiApiKey ? xai : null;
 
 // Azure OpenAI provider factory
 const azureOpenAIProvider = azureOpenAIChatApiKey
   ? createAzureOpenAICompatible({
-    name: "azure-openai",
-    apiKey: azureOpenAIChatApiKey,
-    baseURL: azureOpenAIChatBaseURL,
-  })
+      name: "azure-openai",
+      apiKey: azureOpenAIChatApiKey,
+      baseURL: azureOpenAIChatBaseURL,
+    })
   : null;
 
 // Azure OpenAI Responses provider factory (for GPT-5-mini)
 const azureOpenAIResponsesProvider = azureOpenAIResponsesApiKey
   ? createAzureOpenAICompatible({
-    name: "azure-openai-responses",
-    apiKey: azureOpenAIResponsesApiKey,
-    baseURL: azureOpenAIResponsesBaseURL,
-  })
+      name: "azure-openai-responses",
+      apiKey: azureOpenAIResponsesApiKey,
+      baseURL: azureOpenAIResponsesBaseURL,
+    })
   : null;
 
 const staticModels = {
   openai: {
-    "gpt-4o-mini": azureOpenAIProvider ? azureOpenAIProvider("gpt-4o-mini", "2025-01-01-preview") : openai("gpt-4o-mini"),
-    "gpt-5-mini": azureOpenAIResponsesProvider ? azureOpenAIResponsesProvider("gpt-5-mini", "2025-04-01-preview") : openai("gpt-5-mini"),
+    "gpt-4o-mini": azureOpenAIProvider
+      ? azureOpenAIProvider("gpt-4o-mini", "2025-01-01-preview")
+      : openai("gpt-4o-mini"),
+    "gpt-5-mini": azureOpenAIResponsesProvider
+      ? azureOpenAIResponsesProvider("gpt-5-mini", "2025-04-01-preview")
+      : openai("gpt-5-mini"),
   },
   google: {
     "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
@@ -107,16 +113,16 @@ const staticModels = {
   },
   xai: directXai
     ? {
-      "grok-4-1-fast-non-reasoning": directXai("grok-4-1-fast-non-reasoning"),
-      "grok-4-fast-reasoning": directXai("grok-4-fast-reasoning"),
-      "grok-4-fast-non-reasoning": directXai("grok-4-fast-non-reasoning"),
-      "grok-3-mini": directXai("grok-3-mini"),
-    }
+        "grok-4-1-fast-non-reasoning": directXai("grok-4-1-fast-non-reasoning"),
+        "grok-4-fast-reasoning": directXai("grok-4-fast-reasoning"),
+        "grok-4-fast-non-reasoning": directXai("grok-4-fast-non-reasoning"),
+        "grok-3-mini": directXai("grok-3-mini"),
+      }
     : {},
   deepseek: directDeepseek
     ? {
-      "DeepSeek-V3.1": directDeepseek("deepseek-chat"),
-    }
+        "DeepSeek-V3.1": directDeepseek("deepseek-chat"),
+      }
     : {},
   ollama: {
     "gemma3:1b": ollama("gemma3:1b"),
@@ -132,29 +138,33 @@ const staticModels = {
   },
   together: together
     ? {
-      "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
-      "llama-3.1-70b": together("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"),
-      "llama-3.1-405b": together("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"),
-      "qwen2.5-72b": together("Qwen/Qwen2.5-72B-Instruct-Turbo"),
-      "mistral-7b": together("mistralai/Mistral-7B-Instruct-v0.3"),
-      "deepseek-r1-671b": together("deepseek-ai/DeepSeek-R1"),
-    }
+        "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
+        "llama-3.1-70b": together(
+          "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+        ),
+        "llama-3.1-405b": together(
+          "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+        ),
+        "qwen2.5-72b": together("Qwen/Qwen2.5-72B-Instruct-Turbo"),
+        "mistral-7b": together("mistralai/Mistral-7B-Instruct-v0.3"),
+        "deepseek-r1-671b": together("deepseek-ai/DeepSeek-R1"),
+      }
     : {},
   mistral: process.env.MISTRAL_API_KEY
     ? {
-      "mistral-large": mistral("mistral-large-latest"),
-      "mistral-small": mistral("mistral-small-latest"),
-      "codestral": mistral("codestral-latest"),
-      "pixtral-12b": mistral("pixtral-12b-2409"),
-    }
+        "mistral-large": mistral("mistral-large-latest"),
+        "mistral-small": mistral("mistral-small-latest"),
+        codestral: mistral("codestral-latest"),
+        "pixtral-12b": mistral("pixtral-12b-2409"),
+      }
     : {},
   cohere: process.env.COHERE_API_KEY
     ? {
-      "command-a-03-2025": cohere("command-a-03-2025"),
-      "command-r-plus": cohere("command-r-plus-08-2024"),
-      "command-r": cohere("command-r-08-2024"),
-      "command-r7b": cohere("command-r7b-12-2024"),
-    }
+        "command-a-03-2025": cohere("command-a-03-2025"),
+        "command-r-plus": cohere("command-r-plus-08-2024"),
+        "command-r": cohere("command-r-08-2024"),
+        "command-r7b": cohere("command-r7b-12-2024"),
+      }
     : {},
 };
 
@@ -163,7 +173,9 @@ const staticUnsupportedModels = new Set([
   staticModels.ollama["gemma3:4b"],
   staticModels.ollama["gemma3:12b"],
   // Together AI reasoning models
-  ...(staticModels.together?.["deepseek-r1-671b"] ? [staticModels.together["deepseek-r1-671b"]] : []),
+  ...(staticModels.together?.["deepseek-r1-671b"]
+    ? [staticModels.together["deepseek-r1-671b"]]
+    : []),
 ]);
 
 const staticSupportImageInputModels = {
@@ -216,7 +228,10 @@ registerFileSupport(
   DEFAULT_FILE_PART_MIME_TYPES,
 );
 registerFileSupport(staticModels.xai["grok-3"], DEFAULT_FILE_PART_MIME_TYPES);
-registerFileSupport(staticModels.xai["grok-3-mini"], DEFAULT_FILE_PART_MIME_TYPES);
+registerFileSupport(
+  staticModels.xai["grok-3-mini"],
+  DEFAULT_FILE_PART_MIME_TYPES,
+);
 registerFileSupport(
   staticModels.deepseek["DeepSeek-V3.1"],
   DEFAULT_FILE_PART_MIME_TYPES,
@@ -242,7 +257,7 @@ export const isToolCallUnsupportedModel = (model: LanguageModel) => {
   return allUnsupportedModels.has(model);
 };
 
-const isImageInputUnsupportedModel = (model: LanguageModelV2) => {
+const isImageInputUnsupportedModel = (model: LanguageModel) => {
   return !Object.values(staticSupportImageInputModels).includes(model);
 };
 
