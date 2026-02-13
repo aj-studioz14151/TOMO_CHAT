@@ -9,6 +9,7 @@ import { createGroq } from "@ai-sdk/groq";
 import { LanguageModel } from "ai";
 import { mistral } from "@ai-sdk/mistral";
 import { cohere } from "@ai-sdk/cohere";
+import { xai } from "@ai-sdk/xai";
 import {
   createOpenAICompatibleModels,
   openaiCompatibleModelsSafeParse,
@@ -34,70 +35,59 @@ const groq = createGroq({
 // Together AI - Free tier with generous limits
 const together = process.env.TOGETHER_API_KEY
   ? createOpenAICompatible({
-      name: "together",
-      apiKey: process.env.TOGETHER_API_KEY,
-      baseURL: "https://api.together.xyz/v1",
-    })
+    name: "together",
+    apiKey: process.env.TOGETHER_API_KEY,
+    baseURL: "https://api.together.xyz/v1",
+  })
   : null;
 
 // Azure-hosted models with Bearer token authentication
-const azureApiKey = process.env.AZURE_API_KEY;
-const azureBaseURL =
-  process.env.AZURE_BASE_URL || "https://kamesh6592-7068-resource.services.ai.azure.com/models";
 
 // DeepSeek configuration
-const azureDeepSeekApiKey = process.env.AZURE_DEEPSEEK_API_KEY;
-const azureDeepSeekBaseURL = process.env.AZURE_DEEPSEEK_BASE_URL || "https://kamesh6592-2021-resource.services.ai.azure.com/models";
+const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+const deepseekBaseURL = process.env.DEEPSEEK_BASE_URL || "https://api.deepseek.com/v1";
+
+const xaiApiKey = process.env.XAI_API_KEY;
 
 // Azure OpenAI Chat Completions endpoint
 const azureOpenAIChatApiKey = process.env.AZURE_OPENAI_CHAT_API_KEY || process.env.AZURE_API_KEY;
-const azureOpenAIChatBaseURL = process.env.AZURE_OPENAI_CHAT_BASE_URL || 
+const azureOpenAIChatBaseURL = process.env.AZURE_OPENAI_CHAT_BASE_URL ||
   "https://kamesh6592-7068-resource.cognitiveservices.azure.com/openai/deployments/";
 
 // Azure OpenAI Responses endpoint (for GPT-5-mini)
 const azureOpenAIResponsesApiKey = process.env.AZURE_OPENAI_RESPONSES_API_KEY || process.env.AZURE_API_KEY;
-const azureOpenAIResponsesBaseURL = process.env.AZURE_OPENAI_RESPONSES_BASE_URL || 
+const azureOpenAIResponsesBaseURL = process.env.AZURE_OPENAI_RESPONSES_BASE_URL ||
   "https://kamesh6592-7068-resource.cognitiveservices.azure.com/openai/deployments/";
 
-// Create Azure-hosted providers (SDK will append /chat/completions)
-const azureDeepseek = azureDeepSeekApiKey
+// Create direct providers
+const directDeepseek = deepseekApiKey
   ? createOpenAICompatible({
-      name: "azure-deepseek",
-      apiKey: azureDeepSeekApiKey,
-      baseURL: azureDeepSeekBaseURL,
-      headers: {
-        Authorization: `Bearer ${azureDeepSeekApiKey}`,
-      },
-    })
+    name: "deepseek",
+    apiKey: deepseekApiKey,
+    baseURL: deepseekBaseURL,
+  })
   : null;
 
-const azureGrok = azureApiKey
-  ? createOpenAICompatible({
-      name: "azure-grok",
-      apiKey: azureApiKey,
-      baseURL: azureBaseURL,
-      headers: {
-        Authorization: `Bearer ${azureApiKey}`,
-      },
-    })
+const directXai = xaiApiKey
+  ? xai
   : null;
 
 // Azure OpenAI provider factory
 const azureOpenAIProvider = azureOpenAIChatApiKey
   ? createAzureOpenAICompatible({
-      name: "azure-openai",
-      apiKey: azureOpenAIChatApiKey,
-      baseURL: azureOpenAIChatBaseURL,
-    })
+    name: "azure-openai",
+    apiKey: azureOpenAIChatApiKey,
+    baseURL: azureOpenAIChatBaseURL,
+  })
   : null;
 
 // Azure OpenAI Responses provider factory (for GPT-5-mini)
 const azureOpenAIResponsesProvider = azureOpenAIResponsesApiKey
   ? createAzureOpenAICompatible({
-      name: "azure-openai-responses",
-      apiKey: azureOpenAIResponsesApiKey,
-      baseURL: azureOpenAIResponsesBaseURL,
-    })
+    name: "azure-openai-responses",
+    apiKey: azureOpenAIResponsesApiKey,
+    baseURL: azureOpenAIResponsesBaseURL,
+  })
   : null;
 
 const staticModels = {
@@ -115,17 +105,17 @@ const staticModels = {
     "haiku-4.5": anthropic("claude-haiku-4-5"),
     "opus-4.1": anthropic("claude-opus-4-1"),
   },
-  xai: azureGrok
+  xai: directXai
     ? {
-        "grok-4-fast-non-reasoning": azureGrok("grok-4-fast-non-reasoning"),
-        "grok-3": azureGrok("grok-3"),
-        "grok-3-mini": azureGrok("grok-3-mini"),
-      }
+      "grok-4-fast-non-reasoning": directXai("grok-4-fast-non-reasoning"),
+      "grok-3": directXai("grok-3"),
+      "grok-3-mini": directXai("grok-3-mini"),
+    }
     : {},
-  deepseek: azureDeepseek
+  deepseek: directDeepseek
     ? {
-        "DeepSeek-V3.1": azureDeepseek("DeepSeek-V3.1"),
-      }
+      "DeepSeek-V3.1": directDeepseek("deepseek-chat"),
+    }
     : {},
   ollama: {
     "gemma3:1b": ollama("gemma3:1b"),
@@ -150,29 +140,29 @@ const staticModels = {
   },
   together: together
     ? {
-        "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
-        "llama-3.1-70b": together("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"),
-        "llama-3.1-405b": together("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"),
-        "qwen2.5-72b": together("Qwen/Qwen2.5-72B-Instruct-Turbo"),
-        "mistral-7b": together("mistralai/Mistral-7B-Instruct-v0.3"),
-        "deepseek-r1-671b": together("deepseek-ai/DeepSeek-R1"),
-      }
+      "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
+      "llama-3.1-70b": together("meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"),
+      "llama-3.1-405b": together("meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo"),
+      "qwen2.5-72b": together("Qwen/Qwen2.5-72B-Instruct-Turbo"),
+      "mistral-7b": together("mistralai/Mistral-7B-Instruct-v0.3"),
+      "deepseek-r1-671b": together("deepseek-ai/DeepSeek-R1"),
+    }
     : {},
   mistral: process.env.MISTRAL_API_KEY
     ? {
-        "mistral-large": mistral("mistral-large-latest"),
-        "mistral-small": mistral("mistral-small-latest"),
-        "codestral": mistral("codestral-latest"),
-        "pixtral-12b": mistral("pixtral-12b-2409"),
-      }
+      "mistral-large": mistral("mistral-large-latest"),
+      "mistral-small": mistral("mistral-small-latest"),
+      "codestral": mistral("codestral-latest"),
+      "pixtral-12b": mistral("pixtral-12b-2409"),
+    }
     : {},
   cohere: process.env.COHERE_API_KEY
     ? {
-        "command-a-03-2025": cohere("command-a-03-2025"),
-        "command-r-plus": cohere("command-r-plus-08-2024"),
-        "command-r": cohere("command-r-08-2024"),
-        "command-r7b": cohere("command-r7b-12-2024"),
-      }
+      "command-a-03-2025": cohere("command-a-03-2025"),
+      "command-r-plus": cohere("command-r-plus-08-2024"),
+      "command-r": cohere("command-r-08-2024"),
+      "command-r7b": cohere("command-r7b-12-2024"),
+    }
     : {},
 };
 
@@ -309,9 +299,10 @@ function checkProviderAPIKey(provider: keyof typeof staticModels) {
       key = process.env.ANTHROPIC_API_KEY;
       break;
     case "xai":
+      key = process.env.XAI_API_KEY;
+      break;
     case "deepseek":
-      // Both use Azure endpoint with hardcoded key
-      key = azureApiKey;
+      key = process.env.DEEPSEEK_API_KEY;
       break;
     case "groq":
       key = process.env.GROQ_API_KEY;
