@@ -168,9 +168,10 @@ const staticModels = {
     : {},
   cohere: process.env.COHERE_API_KEY
     ? {
-        "command-r-plus": cohere("command-r-plus"),
-        "command-r": cohere("command-r"),
-        "command-light": cohere("command-light"),
+        "command-a-03-2025": cohere("command-a-03-2025"),
+        "command-r-plus": cohere("command-r-plus-08-2024"),
+        "command-r": cohere("command-r-08-2024"),
+        "command-r7b": cohere("command-r7b-12-2024"),
       }
     : {},
 };
