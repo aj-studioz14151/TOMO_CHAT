@@ -9,17 +9,7 @@ import { requireAdminPermission } from "auth/permissions";
 import { getSession } from "lib/auth/server";
 import { redirect, unauthorized } from "next/navigation";
 import { enrichUsersWithLocation } from "lib/admin/geocoding";
-import dynamicLoader from "next/dynamic";
-
-const UserMap = dynamicLoader(
-  () => import("@/components/admin/user-map").then((mod) => mod.UserMap),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[400px] w-full bg-muted animate-pulse rounded-lg" />
-    ),
-  },
-);
+import { AdminUserMapWrapper } from "@/components/admin/admin-user-map-wrapper";
 
 // Force dynamic rendering to avoid static generation issues with session
 export const dynamic = "force-dynamic";
@@ -68,7 +58,7 @@ export default async function UserListPage({ searchParams }: PageProps) {
 
   return (
     <div className="flex flex-col gap-8 w-full">
-      <UserMap users={usersWithLocation} />
+      <AdminUserMapWrapper users={usersWithLocation} />
       <UsersTable
         users={usersWithLocation}
         currentUserId={session.user.id}
