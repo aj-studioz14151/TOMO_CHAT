@@ -105,7 +105,7 @@ export const nanoBananaTool = createTool({
       return {
         images: resultImages,
         mode,
-        model: "google-imagen-4-replicate",
+        model: "AI Image Generator",
         guide:
           resultImages.length > 0
             ? "The image has been successfully generated and is now displayed above. If you need any edits, modifications, or adjustments to the image, please let me know."
@@ -199,7 +199,7 @@ export const openaiImageTool = createTool({
         return {
           images: [{ url: uploadedImage.sourceUrl, mimeType }],
           mode,
-          model: "stability-ai-ultra",
+          model: "AI Image Generator",
           guide:
             "The image has been successfully generated using Azure DALL-E-3 and is now displayed above. If you need any edits, modifications, or adjustments to the image, please let me know.",
         };
@@ -212,7 +212,7 @@ export const openaiImageTool = createTool({
     return {
       images: [],
       mode,
-      model: "dall-e-3",
+      model: "AI Image Generator",
       guide: "",
     };
   },

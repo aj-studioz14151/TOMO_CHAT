@@ -5,6 +5,7 @@ import equal from "lib/equal";
 import { cn } from "lib/utils";
 import { ImagesIcon, Download } from "lucide-react";
 import { memo, useMemo, useState } from "react";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from "ui/dialog";
 
 interface ImageGeneratorToolInvocationProps {
   part: ToolUIPart;
@@ -163,51 +164,55 @@ function PureImageGeneratorToolInvocation({
           )}
 
           {/* Compact single image */}
-          <div className="relative w-full h-full">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={images[0].url}
-              alt="Generated image"
-              className={cn(
-                "w-full h-full object-cover transition-opacity duration-500",
-                loadedImages.has(0) ? "opacity-100" : "opacity-0",
-              )}
-              style={{ width: "256px", height: "256px" }}
-              onLoad={() => handleImageLoad(0)}
-              onError={(e) => {
-                console.error("Image failed to load:", images[0].url);
-                e.currentTarget.style.display = "none";
-              }}
-            />
-
-            {/* TOMO Logo Watermark */}
-            {loadedImages.has(0) && (
-              <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
+          <Dialog>
+            <DialogTrigger asChild>
+              <div className="relative w-full h-full cursor-zoom-in">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/favicon-96x96.png"
-                  alt="TOMO"
-                  className="w-4 h-4 rounded-full"
+                  src={images[0].url}
+                  alt="Generated image"
+                  className={cn(
+                    "w-full h-full object-cover transition-opacity duration-500",
+                    loadedImages.has(0) ? "opacity-100" : "opacity-0",
+                  )}
+                  style={{ width: "256px", height: "256px" }}
+                  onLoad={() => handleImageLoad(0)}
+                  onError={(e) => {
+                    console.error("Image failed to load:", images[0].url);
+                    e.currentTarget.style.display = "none";
+                  }}
                 />
-                <span className="text-[9px] font-semibold text-white/90 tracking-wide">
-                  TOMO
-                </span>
+
+                {/* TOMO Logo Watermark */}
+                {loadedImages.has(0) && (
+                  <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/favicon-96x96.png"
+                      alt="TOMO"
+                      className="w-4 h-4 rounded-full"
+                    />
+                    <span className="text-[9px] font-semibold text-white/90 tracking-wide">
+                      TOMO
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </DialogTrigger>
+            <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent shadow-none flex items-center justify-center overflow-hidden">
+              <DialogTitle className="sr-only">Image Preview</DialogTitle>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={images[0].url}
+                alt="Generated image full size"
+                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
+              />
+            </DialogContent>
+          </Dialog>
 
           {/* Compact hover controls */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
             <div className="absolute top-2 right-2 flex gap-1.5">
-              <a
-                href={images[0].url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-white/95 hover:bg-white text-gray-900 p-2 rounded-lg text-xs font-medium transition-all backdrop-blur-sm shadow-lg"
-                title="View full size"
-              >
-                <ImagesIcon className="size-3.5" />
-              </a>
               <button
                 onClick={handleDownload}
                 className="bg-white/95 hover:bg-white text-gray-900 p-2 rounded-lg text-xs font-medium transition-all backdrop-blur-sm shadow-lg"
@@ -215,13 +220,6 @@ function PureImageGeneratorToolInvocation({
               >
                 <Download className="size-3.5" />
               </button>
-            </div>
-
-            {/* Model badge - bottom right */}
-            <div className="absolute bottom-2 right-2">
-              <span className="text-[9px] text-white/90 bg-black/60 backdrop-blur-md px-2 py-1 rounded-full font-medium border border-white/10">
-                {result?.model}
-              </span>
             </div>
           </div>
         </div>
