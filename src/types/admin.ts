@@ -29,6 +29,13 @@ export type AdminUserListItem = Omit<
   banned?: boolean | null;
   banReason?: string | null;
   banExpires?: Date | null;
+  ipAddress?: string | null;
+  location?: {
+    lat: number;
+    lon: number;
+    city?: string;
+    country?: string;
+  } | null;
 };
 
 export interface AdminUsersPaginated {

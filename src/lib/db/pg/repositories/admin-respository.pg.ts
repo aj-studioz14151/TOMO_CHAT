@@ -45,6 +45,13 @@ const pgAdminRepository: AdminRepository = {
           FROM ${SessionTable} 
           WHERE ${SessionTable.userId} = ${UserTable.id}
         )`.as("lastLogin"),
+        ipAddress: sql<string | null>`(
+          SELECT ${SessionTable.ipAddress} 
+          FROM ${SessionTable} 
+          WHERE ${SessionTable.userId} = ${UserTable.id}
+          ORDER BY ${SessionTable.updatedAt} DESC
+          LIMIT 1
+        )`.as("ipAddress"),
       })
       .from(UserTable);
 
