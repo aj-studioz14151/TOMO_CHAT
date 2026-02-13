@@ -107,8 +107,9 @@ const staticModels = {
   },
   xai: directXai
     ? {
+      "grok-4-1-fast-non-reasoning": directXai("grok-4-1-fast-non-reasoning"),
+      "grok-4-fast-reasoning": directXai("grok-4-fast-reasoning"),
       "grok-4-fast-non-reasoning": directXai("grok-4-fast-non-reasoning"),
-      "grok-3": directXai("grok-3"),
       "grok-3-mini": directXai("grok-3-mini"),
     }
     : {},
