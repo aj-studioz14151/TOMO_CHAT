@@ -18,10 +18,8 @@ import { getUser, getUserAccounts, updateUserDetails } from "lib/user/server";
 import { getTranslations } from "next-intl/server";
 import { logger } from "better-auth";
 import {
-  generateImageWithOpenAI,
-  generateImageWithXAI,
+  generateImageWithFallback,
   GeneratedImageResult,
-  generateImageWithNanoBanana,
 } from "lib/ai/image/generate-image";
 
 export const updateUserImageAction = validatedActionWithUserManagePermission(
@@ -273,19 +271,14 @@ Generate a profile picture that fulfills the user's request while maintaining th
 
     switch (provider) {
       case "openai":
-        response = await generateImageWithOpenAI({
-          prompt: enhancedPrompt,
-        });
-        break;
       case "xai":
-        response = await generateImageWithXAI({
-          prompt: enhancedPrompt,
-        });
-        break;
       case "google":
-        response = await generateImageWithNanoBanana({
-          prompt: enhancedPrompt,
-        });
+        response = await generateImageWithFallback(
+          {
+            prompt: enhancedPrompt,
+          },
+          provider,
+        );
         break;
       default:
         return {

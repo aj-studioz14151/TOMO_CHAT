@@ -1,8 +1,5 @@
 import { FilePart, ModelMessage, ToolResultPart, tool as createTool } from "ai";
-import {
-  generateImageWithNanoBanana,
-  generateImageWithOpenAI,
-} from "lib/ai/image/generate-image";
+import { generateImageWithFallback } from "lib/ai/image/generate-image";
 import { serverFileStorage } from "lib/file-storage";
 import { safe, watchError } from "ts-safe";
 import z from "zod";
@@ -56,18 +53,23 @@ export const nanoBananaTool = createTool({
         .filter((v) => Boolean(v?.content?.length))
         .reverse() as ModelMessage[];
 
-      const images = await generateImageWithNanoBanana({
-        prompt: "",
-        abortSignal,
-        messages: latestMessages,
-      }).catch((err) => {
+      const images = await generateImageWithFallback(
+        {
+          prompt: "",
+          abortSignal,
+          messages: latestMessages,
+        },
+        "google",
+      ).catch((err) => {
         logger.error("Image generation failed:", err);
         // Re-throw with user-friendly message if not already formatted
         const errorMsg = err?.message || String(err);
-        if (errorMsg.includes('daily image generation limit')) {
+        if (errorMsg.includes("daily image generation limit")) {
           throw err; // Already user-friendly
         }
-        throw new Error("Unable to generate the image. Please try again later.");
+        throw new Error(
+          "Unable to generate the image. Please try again later.",
+        );
       });
 
       const resultImages = await safe(images.images)
@@ -148,28 +150,36 @@ export const openaiImageTool = createTool({
       const prompt =
         latestMessages || "Generate an image based on the conversation";
 
-      const result = await generateImageWithOpenAI({
-        prompt,
-        abortSignal,
-      }).catch((err) => {
+      const result = await generateImageWithFallback(
+        {
+          prompt,
+          abortSignal,
+        },
+        "openai",
+      ).catch((err) => {
         logger.error("OpenAI image generation failed:", err);
         const errorMsg = err?.message || String(err);
-        
+
         // Check for quota/billing errors
-        if (errorMsg.includes('quota') || errorMsg.includes('billing')) {
+        if (errorMsg.includes("quota") || errorMsg.includes("billing")) {
           throw new Error(
-            "The image generation service has reached its usage limit. Please contact support."
+            "The image generation service has reached its usage limit. Please contact support.",
           );
         }
-        
+
         // Check for authentication errors
-        if (errorMsg.includes('unauthorized') || errorMsg.includes('authentication')) {
+        if (
+          errorMsg.includes("unauthorized") ||
+          errorMsg.includes("authentication")
+        ) {
           throw new Error(
-            "There's an authentication issue with the image service. Please contact support."
+            "There's an authentication issue with the image service. Please contact support.",
           );
         }
-        
-        throw new Error("Unable to generate the image. Please try again later.");
+
+        throw new Error(
+          "Unable to generate the image. Please try again later.",
+        );
       });
 
       if (result.images.length > 0) {
