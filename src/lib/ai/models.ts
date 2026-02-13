@@ -4,7 +4,7 @@ import { createOllama } from "ollama-ai-provider-v2";
 import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
 import { anthropic } from "@ai-sdk/anthropic";
-import { LanguageModelV2, openrouter } from "@openrouter/ai-sdk-provider";
+import { LanguageModelV2 } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import { LanguageModel } from "ai";
 import { mistral } from "@ai-sdk/mistral";
@@ -130,15 +130,6 @@ const staticModels = {
     "gpt-oss-120b": groq("openai/gpt-oss-120b"),
     "qwen3-32b": groq("qwen/qwen3-32b"),
   },
-  openRouter: {
-    "gpt-oss-20b:free": openrouter("openai/gpt-oss-20b:free"),
-    "qwen3-8b:free": openrouter("qwen/qwen3-8b:free"),
-    "qwen3-14b:free": openrouter("qwen/qwen3-14b:free"),
-    "qwen3-coder:free": openrouter("qwen/qwen3-coder:free"),
-    "deepseek-r1:free": openrouter("deepseek/deepseek-r1-0528:free"),
-    "deepseek-v3:free": openrouter("deepseek/deepseek-chat-v3-0324:free"),
-    "gemini-2.0-flash-exp:free": openrouter("google/gemini-2.0-flash-exp:free"),
-  },
   together: together
     ? {
       "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
@@ -171,11 +162,6 @@ const staticUnsupportedModels = new Set([
   staticModels.ollama["gemma3:1b"],
   staticModels.ollama["gemma3:4b"],
   staticModels.ollama["gemma3:12b"],
-  staticModels.openRouter["gpt-oss-20b:free"],
-  staticModels.openRouter["qwen3-8b:free"],
-  staticModels.openRouter["qwen3-14b:free"],
-  staticModels.openRouter["deepseek-r1:free"],
-  staticModels.openRouter["gemini-2.0-flash-exp:free"],
   // Together AI reasoning models
   ...(staticModels.together?.["deepseek-r1-671b"] ? [staticModels.together["deepseek-r1-671b"]] : []),
 ]);
@@ -234,10 +220,6 @@ registerFileSupport(staticModels.xai["grok-3-mini"], DEFAULT_FILE_PART_MIME_TYPE
 registerFileSupport(
   staticModels.deepseek["DeepSeek-V3.1"],
   DEFAULT_FILE_PART_MIME_TYPES,
-);
-registerFileSupport(
-  staticModels.openRouter["gemini-2.0-flash-exp:free"],
-  GEMINI_FILE_MIME_TYPES,
 );
 
 const openaiCompatibleProviders = openaiCompatibleModelsSafeParse(
@@ -307,9 +289,6 @@ function checkProviderAPIKey(provider: keyof typeof staticModels) {
       break;
     case "groq":
       key = process.env.GROQ_API_KEY;
-      break;
-    case "openRouter":
-      key = process.env.OPENROUTER_API_KEY;
       break;
     case "together":
       key = process.env.TOGETHER_API_KEY;

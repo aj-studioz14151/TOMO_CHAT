@@ -4,7 +4,6 @@ import { GeminiIcon } from "./gemini-icon";
 import { GrokIcon } from "./grok-icon";
 import { OpenAIIcon } from "./openai-icon";
 import { OllamaIcon } from "./ollama-icon";
-import { OpenRouterIcon } from "./open-router-icon";
 
 export function ModelProviderIcon({
   provider,
@@ -20,8 +19,6 @@ export function ModelProviderIcon({
     <GeminiIcon className={className} />
   ) : provider === "ollama" ? (
     <OllamaIcon className={className} />
-  ) : provider === "openRouter" ? (
-    <OpenRouterIcon className={className} />
   ) : (
     <BlendIcon className={className} />
   );

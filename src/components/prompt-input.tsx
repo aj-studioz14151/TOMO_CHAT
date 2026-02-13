@@ -222,7 +222,7 @@ export default function PromptInput({
   );
 
   const handleGenerateImage = useCallback(
-    (provider?: "google" | "openai" | "openrouter" | "pollinations" | "huggingface") => {
+    (provider?: "google" | "openai" | "pollinations" | "huggingface") => {
       if (!provider) {
         appStoreMutate({
           threadImageToolModel: {},
@@ -421,7 +421,7 @@ export default function PromptInput({
                   return (
                     <div key={i} className="flex items-center gap-2">
                       {mention.type === "workflow" ||
-                      mention.type === "agent" ? (
+                        mention.type === "agent" ? (
                         <Avatar
                           className="size-6 p-1 ring ring-border rounded-full flex-shrink-0"
                           style={mention.icon?.style}
