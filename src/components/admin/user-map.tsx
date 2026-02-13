@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { AdminUserListItem } from "app-types/admin";
@@ -25,9 +25,15 @@ interface UserMapProps {
 
 export function UserMap({ users }: UserMapProps) {
   const [mounted, setMounted] = useState(false);
+  const [geojsonData, setGeojsonData] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
+    // Fetch Tamil Nadu GeoJSON
+    fetch("/maps/tamilnadu.geojson")
+      .then((res) => res.json())
+      .then((data) => setGeojsonData(data))
+      .catch((err) => console.error("Failed to load GeoJSON:", err));
   }, []);
 
   if (!mounted)
@@ -43,10 +49,10 @@ export function UserMap({ users }: UserMapProps) {
         <CardTitle className="text-lg font-semibold">User Locations</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="h-[400px] w-full rounded-lg border overflow-hidden z-0">
+        <div className="h-[600px] w-full rounded-lg border overflow-hidden z-0">
           <MapContainer
-            center={[20, 0]}
-            zoom={2}
+            center={[11.1271, 78.6569]} // Centered on Tamil Nadu
+            zoom={7}
             scrollWheelZoom={true}
             className="h-full w-full"
           >
@@ -54,6 +60,18 @@ export function UserMap({ users }: UserMapProps) {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
+            {geojsonData && (
+              <GeoJSON
+                data={geojsonData}
+                style={{
+                  color: "#1a1a1a", // Darker border
+                  weight: 4,
+                  opacity: 1,
+                  fillColor: "#000",
+                  fillOpacity: 0.05,
+                }}
+              />
+            )}
             {usersWithLocation.map((user) => (
               <Marker
                 key={user.id}
