@@ -164,55 +164,57 @@ function PureImageGeneratorToolInvocation({
           )}
 
           {/* Compact single image */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <div className="relative w-full h-full cursor-zoom-in">
+          <div className="relative w-full h-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={images[0].url}
+              alt="Generated image"
+              className={cn(
+                "w-full h-full object-cover transition-opacity duration-500",
+                loadedImages.has(0) ? "opacity-100" : "opacity-0",
+              )}
+              style={{ width: "256px", height: "256px" }}
+              onLoad={() => handleImageLoad(0)}
+              onError={(e) => {
+                console.error("Image failed to load:", images[0].url);
+                e.currentTarget.style.display = "none";
+              }}
+            />
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="absolute inset-0 z-10 cursor-zoom-in" />
+              </DialogTrigger>
+              <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent shadow-none flex items-center justify-center overflow-hidden">
+                <DialogTitle className="sr-only">Image Preview</DialogTitle>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={images[0].url}
-                  alt="Generated image"
-                  className={cn(
-                    "w-full h-full object-cover transition-opacity duration-500",
-                    loadedImages.has(0) ? "opacity-100" : "opacity-0",
-                  )}
-                  style={{ width: "256px", height: "256px" }}
-                  onLoad={() => handleImageLoad(0)}
-                  onError={(e) => {
-                    console.error("Image failed to load:", images[0].url);
-                    e.currentTarget.style.display = "none";
-                  }}
+                  alt="Generated image full size"
+                  className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
                 />
+              </DialogContent>
+            </Dialog>
 
-                {/* TOMO Logo Watermark */}
-                {loadedImages.has(0) && (
-                  <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-full px-2 py-1 border border-white/10">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/favicon-96x96.png"
-                      alt="TOMO"
-                      className="w-4 h-4 rounded-full"
-                    />
-                    <span className="text-[9px] font-semibold text-white/90 tracking-wide">
-                      TOMO
-                    </span>
-                  </div>
-                )}
+            {/* TOMO Logo Watermark */}
+            {loadedImages.has(0) && (
+              <div className="absolute bottom-2 left-2 flex items-center gap-1.5 bg-black/60 backdrop-blur-md rounded-full px-2 py-1 border border-white/10 z-20">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/favicon-96x96.png"
+                  alt="TOMO"
+                  className="w-4 h-4 rounded-full"
+                />
+                <span className="text-[9px] font-semibold text-white/90 tracking-wide">
+                  TOMO
+                </span>
               </div>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent shadow-none flex items-center justify-center overflow-hidden">
-              <DialogTitle className="sr-only">Image Preview</DialogTitle>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={images[0].url}
-                alt="Generated image full size"
-                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl"
-              />
-            </DialogContent>
-          </Dialog>
+            )}
+          </div>
 
           {/* Compact hover controls */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
-            <div className="absolute top-2 right-2 flex gap-1.5">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-30">
+            <div className="absolute top-2 right-2 flex gap-1.5 pointer-events-auto">
               <button
                 onClick={handleDownload}
                 className="bg-white/95 hover:bg-white text-gray-900 p-2 rounded-lg text-xs font-medium transition-all backdrop-blur-sm shadow-lg"
