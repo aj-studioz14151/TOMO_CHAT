@@ -49,6 +49,15 @@ const openrouter = process.env.OPENROUTER_API_KEY
   })
   : null;
 
+// GitHub Models (via Azure AI Inference)
+const github = process.env.GITHUB_MODELS_API_KEY
+  ? createOpenAICompatible({
+    name: "github",
+    apiKey: process.env.GITHUB_MODELS_API_KEY,
+    baseURL: "https://models.inference.ai.azure.com",
+  })
+  : null;
+
 // Azure-hosted models with Bearer token authentication
 
 // DeepSeek configuration
@@ -103,12 +112,16 @@ const azureOpenAIResponsesProvider = azureOpenAIResponsesApiKey
 
 const staticModels = {
   openai: {
-    "gpt-4o-mini": azureOpenAIProvider
-      ? azureOpenAIProvider("gpt-4o-mini", "2025-01-01-preview")
-      : openai("gpt-4o-mini"),
-    "gpt-5-mini": azureOpenAIResponsesProvider
-      ? azureOpenAIResponsesProvider("gpt-5-mini", "2025-04-01-preview")
-      : openai("gpt-5-mini"),
+    "gpt-4o-mini": github
+      ? github("gpt-4o-mini")
+      : azureOpenAIProvider
+        ? azureOpenAIProvider("gpt-4o-mini", "2025-01-01-preview")
+        : openai("gpt-4o-mini"),
+    "gpt-5-mini": github
+      ? github("gpt-4o") // Map 'gpt-5-mini' to 'gpt-4o' on GitHub as placeholder
+      : azureOpenAIResponsesProvider
+        ? azureOpenAIResponsesProvider("gpt-5-mini", "2025-04-01-preview")
+        : openai("gpt-5-mini"),
   },
   google: {
     "gemini-2.5-flash-lite": google("gemini-2.5-flash-lite"),
@@ -301,7 +314,7 @@ export const customModelProvider = {
       isImageInputUnsupported: isImageInputUnsupportedModel(model),
       supportedFileMimeTypes: [...getFilePartSupportedMimeTypes(model)],
     })),
-    hasAPIKey: checkProviderAPIKey(provider as keyof typeof staticModels),
+    hasAPIKey: checkProviderAPIKey(provider as keyof typeof staticModels) || (provider === 'openai' && !!process.env.GITHUB_MODELS_API_KEY),
   })),
   getModel: (model?: ChatModel): LanguageModel => {
     if (!model) return fallbackModel;
