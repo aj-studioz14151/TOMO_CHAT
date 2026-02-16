@@ -34,10 +34,19 @@ const groq = createGroq({
 // Together AI - Free tier with generous limits
 const together = process.env.TOGETHER_API_KEY
   ? createOpenAICompatible({
-      name: "together",
-      apiKey: process.env.TOGETHER_API_KEY,
-      baseURL: "https://api.together.xyz/v1",
-    })
+    name: "together",
+    apiKey: process.env.TOGETHER_API_KEY,
+    baseURL: "https://api.together.xyz/v1",
+  })
+  : null;
+
+// OpenRouter - Unified API for multiple providers including Anthropic
+const openrouter = process.env.OPENROUTER_API_KEY
+  ? createOpenAICompatible({
+    name: "openrouter",
+    apiKey: process.env.OPENROUTER_API_KEY,
+    baseURL: "https://openrouter.ai/api/v1",
+  })
   : null;
 
 // Azure-hosted models with Bearer token authentication
@@ -66,10 +75,10 @@ const azureOpenAIResponsesBaseURL =
 // Create direct providers
 const directDeepseek = deepseekApiKey
   ? createOpenAICompatible({
-      name: "deepseek",
-      apiKey: deepseekApiKey,
-      baseURL: deepseekBaseURL,
-    })
+    name: "deepseek",
+    apiKey: deepseekApiKey,
+    baseURL: deepseekBaseURL,
+  })
   : null;
 
 const directXai = xaiApiKey ? xai : null;
@@ -77,19 +86,19 @@ const directXai = xaiApiKey ? xai : null;
 // Azure OpenAI provider factory
 const azureOpenAIProvider = azureOpenAIChatApiKey
   ? createAzureOpenAICompatible({
-      name: "azure-openai",
-      apiKey: azureOpenAIChatApiKey,
-      baseURL: azureOpenAIChatBaseURL,
-    })
+    name: "azure-openai",
+    apiKey: azureOpenAIChatApiKey,
+    baseURL: azureOpenAIChatBaseURL,
+  })
   : null;
 
 // Azure OpenAI Responses provider factory (for GPT-5-mini)
 const azureOpenAIResponsesProvider = azureOpenAIResponsesApiKey
   ? createAzureOpenAICompatible({
-      name: "azure-openai-responses",
-      apiKey: azureOpenAIResponsesApiKey,
-      baseURL: azureOpenAIResponsesBaseURL,
-    })
+    name: "azure-openai-responses",
+    apiKey: azureOpenAIResponsesApiKey,
+    baseURL: azureOpenAIResponsesBaseURL,
+  })
   : null;
 
 const staticModels = {
@@ -106,23 +115,31 @@ const staticModels = {
     "gemini-2.5-flash": google("gemini-2.5-flash"),
     "gemini-2.5-pro": google("gemini-2.5-pro"),
   },
-  anthropic: {
-    "sonnet-4.5": anthropic("claude-sonnet-4-5"),
-    "haiku-4.5": anthropic("claude-haiku-4-5"),
-    "opus-4.1": anthropic("claude-opus-4-1"),
-  },
+  anthropic: openrouter
+    ? {
+      "sonnet-4.5": openrouter("anthropic/claude-sonnet-4.5"),
+      "haiku-4.5": openrouter("anthropic/claude-haiku-4.5"),
+      "haiku-3.5": openrouter("anthropic/claude-3.5-haiku"),
+      "opus-4.1": openrouter("anthropic/claude-opus-4.1"),
+    }
+    : {
+      "sonnet-4.5": anthropic("claude-sonnet-4-5"),
+      "haiku-4.5": anthropic("claude-haiku-4-5"),
+      "haiku-3.5": anthropic("claude-3-5-haiku-20241022"),
+      "opus-4.1": anthropic("claude-opus-4-1"),
+    },
   xai: directXai
     ? {
-        "grok-4-1-fast-non-reasoning": directXai("grok-4-1-fast-non-reasoning"),
-        "grok-4-fast-reasoning": directXai("grok-4-fast-reasoning"),
-        "grok-4-fast-non-reasoning": directXai("grok-4-fast-non-reasoning"),
-        "grok-3-mini": directXai("grok-3-mini"),
-      }
+      "grok-4-1-fast-non-reasoning": directXai("grok-4-1-fast-non-reasoning"),
+      "grok-4-fast-reasoning": directXai("grok-4-fast-reasoning"),
+      "grok-4-fast-non-reasoning": directXai("grok-4-fast-non-reasoning"),
+      "grok-3-mini": directXai("grok-3-mini"),
+    }
     : {},
   deepseek: directDeepseek
     ? {
-        "DeepSeek-V3.1": directDeepseek("deepseek-chat"),
-      }
+      "DeepSeek-V3.1": directDeepseek("deepseek-chat"),
+    }
     : {},
   ollama: {
     "gemma3:1b": ollama("gemma3:1b"),
@@ -138,33 +155,33 @@ const staticModels = {
   },
   together: together
     ? {
-        "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
-        "llama-3.1-70b": together(
-          "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
-        ),
-        "llama-3.1-405b": together(
-          "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-        ),
-        "qwen2.5-72b": together("Qwen/Qwen2.5-72B-Instruct-Turbo"),
-        "mistral-7b": together("mistralai/Mistral-7B-Instruct-v0.3"),
-        "deepseek-r1-671b": together("deepseek-ai/DeepSeek-R1"),
-      }
+      "llama-3.1-8b": together("meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo"),
+      "llama-3.1-70b": together(
+        "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+      ),
+      "llama-3.1-405b": together(
+        "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+      ),
+      "qwen2.5-72b": together("Qwen/Qwen2.5-72B-Instruct-Turbo"),
+      "mistral-7b": together("mistralai/Mistral-7B-Instruct-v0.3"),
+      "deepseek-r1-671b": together("deepseek-ai/DeepSeek-R1"),
+    }
     : {},
   mistral: process.env.MISTRAL_API_KEY
     ? {
-        "mistral-large": mistral("mistral-large-latest"),
-        "mistral-small": mistral("mistral-small-latest"),
-        codestral: mistral("codestral-latest"),
-        "pixtral-12b": mistral("pixtral-12b-2409"),
-      }
+      "mistral-large": mistral("mistral-large-latest"),
+      "mistral-small": mistral("mistral-small-latest"),
+      codestral: mistral("codestral-latest"),
+      "pixtral-12b": mistral("pixtral-12b-2409"),
+    }
     : {},
   cohere: process.env.COHERE_API_KEY
     ? {
-        "command-a-03-2025": cohere("command-a-03-2025"),
-        "command-r-plus": cohere("command-r-plus-08-2024"),
-        "command-r": cohere("command-r-08-2024"),
-        "command-r7b": cohere("command-r7b-12-2024"),
-      }
+      "command-a-03-2025": cohere("command-a-03-2025"),
+      "command-r-plus": cohere("command-r-plus-08-2024"),
+      "command-r": cohere("command-r-08-2024"),
+      "command-r7b": cohere("command-r7b-12-2024"),
+    }
     : {},
 };
 
@@ -216,6 +233,14 @@ registerFileSupport(
 
 registerFileSupport(
   staticModels.anthropic["sonnet-4.5"],
+  ANTHROPIC_FILE_MIME_TYPES,
+);
+registerFileSupport(
+  staticModels.anthropic["haiku-4.5"],
+  ANTHROPIC_FILE_MIME_TYPES,
+);
+registerFileSupport(
+  staticModels.anthropic["haiku-3.5"],
   ANTHROPIC_FILE_MIME_TYPES,
 );
 registerFileSupport(
@@ -294,7 +319,7 @@ function checkProviderAPIKey(provider: keyof typeof staticModels) {
       key = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
       break;
     case "anthropic":
-      key = process.env.ANTHROPIC_API_KEY;
+      key = process.env.OPENROUTER_API_KEY || process.env.ANTHROPIC_API_KEY;
       break;
     case "xai":
       key = process.env.XAI_API_KEY;
