@@ -6,8 +6,8 @@ import {
   AudioWaveformIcon,
   ChevronDown,
   MessageCircleDashed,
-  PanelLeft,
 } from "lucide-react";
+import { SimPanelLeft } from "@/components/ui/sim-panel-left";
 import { Button } from "ui/button";
 import { Separator } from "ui/separator";
 
@@ -72,7 +72,7 @@ export function AppHeader() {
             data-testid="sidebar-toggle"
             data-state={open ? "open" : "closed"}
           >
-            <PanelLeft />
+            <SimPanelLeft className={`size-[17px] transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`} />
           </Button>
         </TooltipTrigger>
         <TooltipContent align="start" side="bottom">
