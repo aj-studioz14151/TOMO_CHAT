@@ -1,13 +1,11 @@
 "use client";
 
-import { useSidebar } from "ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "ui/tooltip";
 import {
   AudioWaveformIcon,
   ChevronDown,
   MessageCircleDashed,
 } from "lucide-react";
-import { SimPanelLeft } from "@/components/ui/sim-panel-left";
 import { Button } from "ui/button";
 import { Separator } from "ui/separator";
 
@@ -25,7 +23,6 @@ import { BackButton } from "@/components/layouts/back-button";
 export function AppHeader() {
   const t = useTranslations();
   const [appStoreMutate] = appStore(useShallow((state) => [state.mutate]));
-  const { toggleSidebar, open } = useSidebar();
   const currentPaths = usePathname();
   const searchParams = useSearchParams();
 
@@ -58,40 +55,6 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 flex items-center px-3 py-2">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Toggle Sidebar"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              toggleSidebar();
-            }}
-            data-testid="sidebar-toggle"
-            data-state={open ? "open" : "closed"}
-          >
-            <SimPanelLeft className={`size-[17px] transition-transform duration-200 ${open ? "rotate-180" : "rotate-0"}`} />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent align="start" side="bottom">
-          <div className="flex items-center gap-2">
-            {t("KeyboardShortcuts.toggleSidebar")}
-            <div className="text-xs text-muted-foreground flex items-center gap-1">
-              {getShortcutKeyList(Shortcuts.toggleSidebar).map((key) => (
-                <span
-                  key={key}
-                  className="w-5 h-5 flex items-center justify-center bg-muted rounded "
-                >
-                  {key}
-                </span>
-              ))}
-            </div>
-          </div>
-        </TooltipContent>
-      </Tooltip>
-
       {componentByPage}
       <div className="flex-1" />
       {showActionButtons && (

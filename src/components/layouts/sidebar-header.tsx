@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarTrigger,
   useSidebar,
 } from "ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -91,6 +92,7 @@ export function SidebarHeaderShared({
               />
             </Link>
           </SidebarMenuButton>
+          <SidebarTrigger className="ml-auto group-data-[collapsible=icon]:hidden" />
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarHeader>
