@@ -267,7 +267,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon"
-      className={cn("size-7", className)}
+      className={cn("size-7", className, isOpen ? "cursor-w-resize" : "cursor-e-resize")}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -275,6 +275,7 @@ function SidebarTrigger({
       {...props}
     >
       <SimPanelLeft className={cn("h-[17.5px] w-[17.5px] transition-transform duration-200", isOpen ? "rotate-180" : "rotate-0")} />
+      <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
 }
